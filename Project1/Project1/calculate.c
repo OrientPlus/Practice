@@ -76,6 +76,8 @@ int check_notation(int* mass, int size)
 int translate_number_to_string(int mass_size, int* int_array, int notation, char* char_array)
 {
 	char mass[] = { "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" };
+	char tmp = 0;
+	int n = 0;
 
 	for (int i = 0; i < mass_size; i++)
 	{
@@ -83,19 +85,20 @@ int translate_number_to_string(int mass_size, int* int_array, int notation, char
 		{
 			if (int_array[i] == j)
 			{
-				if (int_array[i] <= 9)
-				{
-					char_array[i] = mass[j];
-					printf("\n CHAR == %c // INT == %d\n", char_array[i], int_array[i]);
-					break;
-				}
-				else
-				{
-					char_array[i] = mass[j-1];
-					printf("\n CHAR == %c // INT == %d\n", char_array[i], int_array[i]);
-					break;
-				}
+				char_array[i] = mass[j];
+				break;
 			}
 		}
 	}
+
+	n = mass_size - 2;
+	for (int i = 0; i < mass_size/2; i++)
+	{
+		tmp = char_array[i];
+		char_array[i] = char_array[n];
+		char_array[n] = tmp;
+		n--;
+	}
+	char_array[mass_size - 1] = '\0';
+
 }

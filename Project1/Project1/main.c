@@ -77,17 +77,19 @@ int my_itoa(int N, int notation)
 		i++;
 	}
 
-	if (i < size_code_array) //Оптимизируем память
+	if (i <= size_code_array) //Оптимизируем память
 	{
+		i++;
 		size_code_array = i;
 		code_array = (int*)realloc(code_array, size_code_array * sizeof(int));
 	}
 
 	enter_array = (char*)calloc(enter_array, i * sizeof(char));
 	translate_number_to_string(size_code_array, &code_array[0], notation, &enter_array[0]);
+	return &enter_array[0];
 }
 
-int main(char* string)
+int main()
 {
 	setlocale(0, "ru");
 	int n = 0,
@@ -96,7 +98,8 @@ int main(char* string)
 		i = 0,
 		switch_on = 0,
 		ItoA = 0;
-	char* first_array = (char*)malloc(size_first_array * sizeof(char));
+	char* first_array = (char*)malloc(size_first_array * sizeof(char)), 
+		*ptr=NULL;
 
 	printf("Меню:\t(1) - my_atoi\n \t(2) - my_itoa\n:");
 	scanf_s("%d", &switch_on);
@@ -116,7 +119,7 @@ int main(char* string)
 		system("pause");
 		exit(1);
 	}
-	printf(":");
+
 	switch (switch_on)
 	{
 	case 1:
@@ -149,10 +152,16 @@ int main(char* string)
 	case 2:
 		printf("\n Enter number\n:");
 		scanf_s("%d", &ItoA);
-		n = my_itoa(ItoA, notation);
-
+		ptr = my_itoa(ItoA, notation);
+		i = 0;
+		while (ptr[i] != '\0')
+		{
+			printf("\n TRANSLATED INT ===> %c", ptr[i]);
+			i++;
+		}
 		break;
 	}
+
 	printf("\n");
 	system("pause");
 	return 0;
