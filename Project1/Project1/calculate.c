@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <conio.h>
 
-#include "Calculate.h"
+#include "calculate.h"
 
 
 int sqr(int number, int power)
@@ -73,26 +73,29 @@ int check_notation(int* mass, int size)
 	return max_Notation;
 }
 
-int translate_number_to_string(int mass_size, int* int_array, int notation)
+int translate_number_to_string(int mass_size, int* int_array, int notation, char* char_array)
 {
 	char mass[] = { "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" };
 
 	for (int i = 0; i < mass_size; i++)
 	{
-		printf("\n->\n");
-		printf("\nMASS ELEMENT = %d", int_array[i]);
-	}
-
-	/*for (int i = 0; i < mass_size; i++)
-	{
 		for (int j = 0; j < 63; j++)
 		{
 			if (int_array[i] == j)
 			{
-				char_array[i] = mass[j];
-				break;
+				if (int_array[i] <= 9)
+				{
+					char_array[i] = mass[j];
+					printf("\n CHAR == %c // INT == %d\n", char_array[i], int_array[i]);
+					break;
+				}
+				else
+				{
+					char_array[i] = mass[j-1];
+					printf("\n CHAR == %c // INT == %d\n", char_array[i], int_array[i]);
+					break;
+				}
 			}
 		}
-		printf("\nVIVOD SIMVOLA = %c", char_array[i]);
-	}*/
+	}
 }

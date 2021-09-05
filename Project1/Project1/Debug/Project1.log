@@ -1,0 +1,3 @@
+﻿  calculate.c
+C:\Users\gutro\Desktop\GIT\Project1\Project1\calculate.c(101): warning C4716: translate_number_to_string: должна возвращать значение
+  Project1.vcxproj -> C:\Users\gutro\Desktop\GIT\Project1\Debug\Project1.exe

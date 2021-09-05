@@ -59,12 +59,10 @@ int my_atoi(char* array_symbols, int not, int size_array_symbols)
 
 int my_itoa(int N, int notation)
 {
-	int a = 35, b = 0, size_code_array = 7, i = 0;
+	int a = 0, b = 0, size_code_array = 0, i = 0;
 	int* code_array = NULL;
-	code_array = (int*)calloc(code_array, size_code_array * sizeof(int));
 	char* enter_array = NULL;
-
-	N = 35;
+	a = N;
 	while (a != 0)
 	{
 		b = N % notation;
@@ -72,13 +70,13 @@ int my_itoa(int N, int notation)
 		N = N / notation;
 		if (i == size_code_array)
 		{
-			size_code_array += 2;
+			size_code_array += 4;
 			code_array = (int*)realloc(code_array, size_code_array * sizeof(int));
 		}
 		code_array[i] = b;
-		printf(" EL =  %d\n", code_array[i]);
 		i++;
 	}
+
 	if (i < size_code_array) //Оптимизируем память
 	{
 		size_code_array = i;
@@ -86,7 +84,7 @@ int my_itoa(int N, int notation)
 	}
 
 	enter_array = (char*)calloc(enter_array, i * sizeof(char));
-	translate_number_to_string(size_code_array, code_array, notation);
+	translate_number_to_string(size_code_array, &code_array[0], notation, &enter_array[0]);
 }
 
 int main(char* string)
