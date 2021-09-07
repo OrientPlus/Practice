@@ -1,4 +1,0 @@
-﻿  Source.cpp
-C:\Users\gutro\Desktop\ИНФА\2 курс\1semestr\Project1\Project1\Source.cpp(11,30): error C3867: "std::vector<std::string,std::allocator<std::string>>::size": нестандартный синтаксис; используйте "&", чтобы создать указатель на член
-C:\Users\gutro\Desktop\ИНФА\2 курс\1semestr\Project1\Project1\Source.cpp(11,30): error C2446: <: нет преобразования "unsigned int (__thiscall std::vector<std::string,std::allocator<std::string>>::* )(void) noexcept const" в "int"
-C:\Users\gutro\Desktop\ИНФА\2 курс\1semestr\Project1\Project1\Source.cpp(11,26): message : Не существует контекста, в котором такое преобразование возможно
