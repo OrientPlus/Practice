@@ -4,16 +4,13 @@
 
 #include "calculate.h"
 
+int values = 0;
 
 int my_atoi(char* array_symbols, int not, int size_array_symbols)
 {
-	int tmp = 0, * array_codes, i = 0, output = 0;
+	int tmp = 0, * array_codes = NULL, i = 0, output = 0;
 	long int Ltmp = 0;
-	array_codes = (int*)malloc(size_array_symbols * sizeof(int));
-	for (int j = 0; j < size_array_symbols; j++)
-	{
-		array_codes[j] = 0;
-	}
+	array_codes = (int*)calloc(array_codes, size_array_symbols * sizeof(int));
 
 	for (int j = 0; j < size_array_symbols; j++)
 	{
@@ -39,7 +36,7 @@ int my_atoi(char* array_symbols, int not, int size_array_symbols)
 		}
 	}
 
-	output = translate_code_to_number(&array_codes[0], size_array_symbols, not);
+	output = translate_string_to_number(&array_codes[0], size_array_symbols, not);
 	return output;
 }
 
@@ -103,12 +100,12 @@ int sqr(int number, int power)
 	}
 }
 
-int translate_code_to_number(int* mass, int size, int notation)
+int translate_string_to_number(int* mass, int size, int notation)
 {
-	int _notation = check_notation(&mass[0], size);
+	int _notation = check_max_notation(&mass[0], size);
 	if (notation == 0)
 	{
-		notation = check_notation(&mass[0], size);
+		notation = check_max_notation(&mass[0], size);
 	}
 	else if (_notation > notation - 1)
 	{
@@ -131,7 +128,7 @@ int translate_code_to_number(int* mass, int size, int notation)
 	return result;
 }
 
-int check_notation(int* mass, int size)
+int check_max_notation(int* mass, int size)
 {
 	int max_Notation = 0;
 	for (int i = 0; i < size; i++)
@@ -178,6 +175,11 @@ int check_enter(int N)
 {
 	if ((N >= '0' & N <= '9') || (N >= 'A' & N <= 'Z') || (N >= 'a' & N <= 'z') || (N == '\n'))
 	{
+		return 0;
+	}
+	else if (N == 45 & values == 0)
+	{
+		values++;
 		return 0;
 	}
 	else

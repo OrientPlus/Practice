@@ -13,7 +13,8 @@ int main()
 		notation,
 		size_first_array = 5,
 		i = 0,
-		switch_on = 0,
+		switch_on = 0;
+	long long int
 		ItoA = 0;
 	char* first_array = (char*)malloc(size_first_array * sizeof(char)), 
 		*ptr=NULL;
@@ -68,18 +69,26 @@ int main()
 
 	case 2:
 		printf("\n Enter number\n:");
-		scanf_s("%d", &ItoA);
+		scanf_s("%lld", &ItoA);
+		if (ItoA > INT_MAX || ItoA < INT_MIN)
+		{
+			printf("\n\tERROR #20. You entered invalid number!\n");
+			system("pause");
+			exit(20);
+		}
+
 		ptr = my_itoa(ItoA, notation);
 		i = 0;
+		printf("Translated number: ");
 		while (ptr[i] != '\0')
 		{
-			printf("\n TRANSLATED INT ===> %c", ptr[i]);
+			printf("%c", ptr[i]);
 			i++;
 		}
 		break;
 	}
 
-	printf("\n");
+	printf("\n\n");
 	system("pause");
 	return 0;
 }
