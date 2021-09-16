@@ -1,16 +1,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <conio.h>
+#include <stdbool.h>
+#include <stdarg.h>
 
 #include "calculate.h"
 
-int values = 0;
+bool ERR_VAL = true;
 
 int my_atoi(char* array_symbols, int not, int size_array_symbols)
 {
-	int tmp = 0, * array_codes = NULL, i = 0, output = 0;
-	long int Ltmp = 0;
+	int tmp = 0, * array_codes = NULL, i = 0, output = 0, flag = 0;
 	array_codes = (int*)calloc(array_codes, size_array_symbols * sizeof(int));
+
+	if (array_symbols[0] == 45) //Обработка отрицательных значений, убираем минус в 0 элементе массива
+	{
+		*array_symbols = check_minus(3, 0, size_array_symbols, &array_symbols[0]);
+		flag = 1;
+		size_array_symbols--;
+	}
 
 	for (int j = 0; j < size_array_symbols; j++)
 	{
@@ -37,14 +45,24 @@ int my_atoi(char* array_symbols, int not, int size_array_symbols)
 	}
 
 	output = translate_string_to_number(&array_codes[0], size_array_symbols, not);
+	if (flag == 1)
+	{
+		output = output * (-1);
+	}
+	free(array_codes);
 	return output;
 }
 
 int my_itoa(int N, int notation)
 {
-	int a = 0, b = 0, size_code_array = 0, i = 0;
+	int a = 0, b = 0, size_code_array = 0, i = 0, flag=0;
 	int* code_array = NULL;
 	char* enter_array = NULL;
+	if (N < 0)
+	{
+		N = check_minus(2, 1, N);
+		flag = 1;
+	}
 	a = N;
 	while (a != 0)
 	{
@@ -67,8 +85,20 @@ int my_itoa(int N, int notation)
 		code_array = (int*)realloc(code_array, size_code_array * sizeof(int));
 	}
 
-	enter_array = (char*)calloc(enter_array, i * sizeof(char));
-	translate_number_to_string(size_code_array, &code_array[0], notation, &enter_array[0]);
+	enter_array = (char*)calloc(enter_array, (i+1) * sizeof(char));
+	translate_number_to_string(size_code_array+1, &code_array[0], notation, &enter_array[0]);
+	if (flag == 1)
+	{
+		enter_array[0] = '-';
+	}
+	else {
+		for (int j = 0; j < size_code_array-1; ++j)
+		{
+			enter_array[j] = enter_array[j + 1];
+		}
+		enter_array = (char*)realloc(enter_array, size_code_array * sizeof(char));
+		enter_array[size_code_array - 1] = '\0';
+	}
 	return &enter_array[0];
 }
 
@@ -146,21 +176,20 @@ int translate_number_to_string(int mass_size, int* int_array, int notation, char
 	char mass[] = { "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" };
 	char tmp = 0;
 	int n = 0;
-
 	for (int i = 0; i < mass_size; i++)
 	{
 		for (int j = 0; j < 63; j++)
 		{
 			if (int_array[i] == j)
 			{
-				char_array[i] = mass[j];
+				char_array[i+1] = mass[j];
 				break;
 			}
 		}
 	}
 
 	n = mass_size - 2;
-	for (int i = 0; i < mass_size/2; i++)
+	for (int i = 1; i < mass_size/2; i++)
 	{
 		tmp = char_array[i];
 		char_array[i] = char_array[n];
@@ -177,9 +206,9 @@ int check_enter(int N)
 	{
 		return 0;
 	}
-	else if (N == 45 & values == 0)
+	else if (N == 45 & ERR_VAL == true)
 	{
-		values++;
+		ERR_VAL = false;
 		return 0;
 	}
 	else
@@ -187,5 +216,30 @@ int check_enter(int N)
 		printf("\n\tERROR #4! Invalid symbols!\n");
 		system("pause");
 		exit(4);
+	}
+}
+
+int check_minus(int n, ...)
+{
+	char* ptr;
+	int ch, val, size;
+	va_list factor;
+	va_start(factor, n);
+	ch = va_arg(factor, int);
+
+	if (ch == 1)
+	{
+		val = va_arg(factor, int);
+		val = val * (-1);
+		return val;
+	}
+	else {
+		size = va_arg(factor, int);
+		ptr = va_arg(factor, char*);
+		for (int i = 0; i < size-1; i++)
+		{
+			ptr[i] = ptr[i + 1];
+		}
+		return &ptr[0];
 	}
 }

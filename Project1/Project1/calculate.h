@@ -8,3 +8,4 @@ int translate_number_to_string(int mass_size, int* int_array, int notation, char
 int check_enter(int N);
 int my_atoi(char* array_symbols, int not, int size_array_symbols);
 int my_itoa(int N, int notation);
+int check_minus(int n, ...);
