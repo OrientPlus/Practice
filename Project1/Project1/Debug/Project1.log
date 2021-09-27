@@ -1,13 +1,6 @@
-﻿  calculate.c
-C:\Users\gutro\Desktop\GIT\Практика\Project1\Project1\calculate.c(14,40): warning C4047: функция: "size_t" отличается по уровням косвенного обращения от "int *"
-C:\Users\gutro\Desktop\GIT\Практика\Project1\Project1\calculate.c(14,40): warning C4024: calloc: различные типы для формального и фактического параметров 1
-C:\Users\gutro\Desktop\GIT\Практика\Project1\Project1\calculate.c(88,41): warning C4047: функция: "size_t" отличается по уровням косвенного обращения от "char *"
-C:\Users\gutro\Desktop\GIT\Практика\Project1\Project1\calculate.c(88,41): warning C4024: calloc: различные типы для формального и фактического параметров 1
-C:\Users\gutro\Desktop\GIT\Практика\Project1\Project1\calculate.c(102,24): warning C4047: return: "int" отличается по уровням косвенного обращения от "char *"
-C:\Users\gutro\Desktop\GIT\Практика\Project1\Project1\calculate.c(205,26): warning C4554: "&": проверьте приоритет операторов на ошибки; для уточнения приоритета используйте скобки
-C:\Users\gutro\Desktop\GIT\Практика\Project1\Project1\calculate.c(205,51): warning C4554: "&": проверьте приоритет операторов на ошибки; для уточнения приоритета используйте скобки
-C:\Users\gutro\Desktop\GIT\Практика\Project1\Project1\calculate.c(205,76): warning C4554: "&": проверьте приоритет операторов на ошибки; для уточнения приоритета используйте скобки
-C:\Users\gutro\Desktop\GIT\Практика\Project1\Project1\calculate.c(209,36): warning C4554: "&": проверьте приоритет операторов на ошибки; для уточнения приоритета используйте скобки
-C:\Users\gutro\Desktop\GIT\Практика\Project1\Project1\calculate.c(243,17): warning C4047: return: "int" отличается по уровням косвенного обращения от "char *"
-C:\Users\gutro\Desktop\GIT\Практика\Project1\Project1\calculate.c(201): warning C4716: translate_number_to_string: должна возвращать значение
+﻿  main.c
+C:\Users\gutro\Desktop\GIT\Практика\Project1\Project1\main.c(58,78): warning C4133: =: несовместимые типы - из "int *" в "char *"
+C:\Users\gutro\Desktop\GIT\Практика\Project1\Project1\main.c(64,61): warning C4133: =: несовместимые типы - из "int *" в "char *"
+C:\Users\gutro\Desktop\GIT\Практика\Project1\Project1\main.c(81,21): warning C4244: функция: преобразование "__int64" в "int", возможна потеря данных
+C:\Users\gutro\Desktop\GIT\Практика\Project1\Project1\main.c(81,32): warning C4047: =: "char *" отличается по уровням косвенного обращения от "int"
   Project1.vcxproj -> C:\Users\gutro\Desktop\GIT\Практика\Project1\Debug\Project1.exe

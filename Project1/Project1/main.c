@@ -41,6 +41,7 @@ int main()
 	switch (switch_on)
 	{
 	case 1:
+		printf("Enter value:");
 		n = fgetc(stdin);
 		while (1)
 		{
@@ -72,7 +73,7 @@ int main()
 		scanf_s("%lld", &ItoA);
 		if (ItoA > INT_MAX || ItoA < INT_MIN)
 		{
-			printf("\n\tERROR #20. You entered invalid number!\n");
+			printf("\n\tERROR #20. The entered value goes beyond the INT type!\n");
 			system("pause");
 			exit(20);
 		}

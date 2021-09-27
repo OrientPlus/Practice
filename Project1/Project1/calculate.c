@@ -6,7 +6,6 @@
 
 #include "calculate.h"
 
-bool ERR_VAL = true;
 
 int my_atoi(char* array_symbols, int not, int size_array_symbols)
 {
@@ -15,7 +14,11 @@ int my_atoi(char* array_symbols, int not, int size_array_symbols)
 
 	if (array_symbols[0] == 45) //Обработка отрицательных значений, убираем минус в 0 элементе массива
 	{
-		*array_symbols = check_minus(3, 0, size_array_symbols, &array_symbols[0]);
+		for (int i = 0; i < size_array_symbols - 1; i++)
+		{
+			array_symbols[i] = array_symbols[i + 1];
+		}
+		array_symbols = (char*)realloc(array_symbols, (size_array_symbols - 1) * sizeof(char));
 		flag = 1;
 		size_array_symbols--;
 	}
@@ -49,7 +52,6 @@ int my_atoi(char* array_symbols, int not, int size_array_symbols)
 	{
 		output = output * (-1);
 	}
-	free(array_codes);
 	return output;
 }
 
@@ -60,7 +62,7 @@ int my_itoa(int N, int notation)
 	char* enter_array = NULL;
 	if (N < 0)
 	{
-		N = check_minus(2, 1, N);
+		N = N*(-1);
 		flag = 1;
 	}
 	a = N;
@@ -96,7 +98,6 @@ int my_itoa(int N, int notation)
 		{
 			enter_array[j] = enter_array[j + 1];
 		}
-		enter_array = (char*)realloc(enter_array, size_code_array * sizeof(char));
 		enter_array[size_code_array - 1] = '\0';
 	}
 	return &enter_array[0];
@@ -119,7 +120,7 @@ int sqr(int number, int power)
 		{
 			if (tmp * base > INT_MAX)
 			{
-				printf("\n\tERROR #3! You entered so big value! The value is outside the int type.\n");
+				printf("\n\tERROR #3! You entered so big value! The value is outside the INT type.\n");
 				system("pause");
 				exit(3);
 			}
@@ -137,7 +138,7 @@ int translate_string_to_number(int* mass, int size, int notation)
 	{
 		notation = check_max_notation(&mass[0], size);
 	}
-	else if (_notation > notation - 1)
+	else if (_notation > (notation - 1))
 	{
 		printf("\n\tERROR #2! The entered character does not match the specified number system!\n");
 		system("pause");
@@ -168,7 +169,7 @@ int check_max_notation(int* mass, int size)
 			max_Notation = mass[i];
 		}
 	}
-	return max_Notation;
+	return max_Notation+1;
 }
 
 int translate_number_to_string(int mass_size, int* int_array, int notation, char* char_array)
@@ -202,13 +203,14 @@ int translate_number_to_string(int mass_size, int* int_array, int notation, char
 
 int check_enter(int N)
 {
+	static int point = 0;
 	if ((N >= '0' & N <= '9') || (N >= 'A' & N <= 'Z') || (N >= 'a' & N <= 'z') || (N == '\n'))
 	{
 		return 0;
 	}
-	else if (N == 45 & ERR_VAL == true)
+	else if (N == 45 & point == 0)
 	{
-		ERR_VAL = false;
+		point = 1;
 		return 0;
 	}
 	else
@@ -216,30 +218,5 @@ int check_enter(int N)
 		printf("\n\tERROR #4! Invalid symbols!\n");
 		system("pause");
 		exit(4);
-	}
-}
-
-int check_minus(int n, ...)
-{
-	char* ptr;
-	int ch, val, size;
-	va_list factor;
-	va_start(factor, n);
-	ch = va_arg(factor, int);
-
-	if (ch == 1)
-	{
-		val = va_arg(factor, int);
-		val = val * (-1);
-		return val;
-	}
-	else {
-		size = va_arg(factor, int);
-		ptr = va_arg(factor, char*);
-		for (int i = 0; i < size-1; i++)
-		{
-			ptr[i] = ptr[i + 1];
-		}
-		return &ptr[0];
 	}
 }
