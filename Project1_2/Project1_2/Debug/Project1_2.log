@@ -1,5 +1,7 @@
 ﻿  main.c
-C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(9,14): warning C4047: функция: "char *" отличается по уровням косвенного обращения от "char *[50]"
-C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(9,14): warning C4024: gets_s: различные типы для формального и фактического параметров 1
-C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(10,9): warning C4477: "printf": в строке форматирования "%s" требуется аргумент типа "char *", но вариативный аргумент "1" имеет тип "char **"
+C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(15,6): warning C4013: gets: нет определения; предполагается "extern" с возвратом типа "int"
+C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(32,16): warning C4473: "fscanf_s": передано недостаточно аргументов для строки формата
+C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(32,16): message : заполнители и их параметры ожидают переменное число аргументов в количестве 2, но было предоставлено 1
+C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(32,16): message : отсутствующий вариативный аргумент "2" требуется для строки форматирования "%c"
+C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(32,16): message : этот аргумент используется в качестве размера буфера
   Project1_2.vcxproj -> C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Debug\Project1_2.exe
