@@ -1,0 +1,4 @@
+﻿  main.c
+C:\Users\gutro\Desktop\GIT\Практика\Project3_1\Project3_1\main.c(27,39): warning C4047: функция: "size_t" отличается по уровням косвенного обращения от "char *"
+C:\Users\gutro\Desktop\GIT\Практика\Project3_1\Project3_1\main.c(27,29): warning C4024: calloc: различные типы для формального и фактического параметров 1
+  Project3_1.vcxproj -> C:\Users\gutro\Desktop\GIT\Практика\Project3_1\Debug\Project3_1.exe

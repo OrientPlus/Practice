@@ -1,7 +1,4 @@
 ﻿  main.c
-C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(15,6): warning C4013: gets: нет определения; предполагается "extern" с возвратом типа "int"
-C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(32,16): warning C4473: "fscanf_s": передано недостаточно аргументов для строки формата
-C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(32,16): message : заполнители и их параметры ожидают переменное число аргументов в количестве 2, но было предоставлено 1
-C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(32,16): message : отсутствующий вариативный аргумент "2" требуется для строки форматирования "%c"
-C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(32,16): message : этот аргумент используется в качестве размера буфера
+C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(40,9): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
+C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(48,25): warning C4047: =: "char *" отличается по уровням косвенного обращения от "int"
   Project1_2.vcxproj -> C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Debug\Project1_2.exe
