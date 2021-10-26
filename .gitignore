@@ -49,8 +49,14 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-
-# My 
+# My filter
 *.opendb
 *.ipch
 *.db
+*.user
+*.tlog
+*.recipe
+*.db-shm
+*.db-wal
+*.log
+*.VC.db
