@@ -8,37 +8,73 @@
 
 void ReplaceSubstring(char* ptrSM, char* subStr, int sizeSubstr, char* insertedStr, int sizeInsStr) //Ф-я замены подстроки
 {
+	static int seek_pos = 0;
+	FILE* out;
+	fopen_s(&out, "output.txt", "a");
+	fseek(out, seek_pos, SEEK_SET);
+
 	char* modMass = NULL;
-	modMass = (char*)malloc(1024 * sizeof(char)); //Массив хранящий текст с измененныим подстроками
-	int i = 0, tmpJ=0;
+	modMass = (char*)malloc(1024 * sizeof(char)); //Массив хранящий текст с измененными подстроками
+	int *massIndex = (int*)malloc(512*sizeof(int)),
+		_i = 0,
+		sizeIndex = 0,
+		it_mod_mass = 0;
+	
 
-
-	for (int j=0; j < 512; j++) //находит первое совпадение в тексте с подстрокой 
+	for (int i = 0; i <= 512; i++) //Ищет совпадения по первому символу. Если искомая подстрока полностью совпадает, сохраняет индекс первого эл-та в исх. строке
 	{
-		if (subStr[i] == ptrSM[j] && j==tmpJ++ && i<sizeSubstr-1)
+		if (subStr[0] == ptrSM[i])
 		{
-			tmpJ = j;
-			i++;
-		}
-		if (i == sizeSubstr)
-		{
-			tmpJ = j - sizeSubstr; //записывает позицию найденного совпадения во временную переменную
-			break;
+			if (comparison_of_substrings(0, i, &subStr[0], &ptrSM[0], sizeSubstr) == 1)
+			{
+				massIndex[_i] = i;
+				_i++;
+			}	
 		}
 	}
-	for (int it = 0; it < 512; it++)
+	sizeIndex = _i+1; //переменная хранящая размер массива.
+	massIndex = (int*)realloc(massIndex, sizeIndex * sizeof(int));
+	_i = 0;
+
+	//заменить подстроку в исходном тексте
+	//пишем в новый массив строку пока не встретим первую замену, пишем замену, пишем дальше исходную строку
+	//начиная с элемента (j+длина подстроки  тоесть ab->abcd => +2) пока не встретим очередную замену
+	// пишем модифицированную строку в файл, запоминаем позицию курсора.
+	for (int i = 0; i<511; i++)
 	{
-		if (it != tmpJ)
+		if (i != massIndex[_i])
 		{
-			modMass[it] = ptrSM[it];
+			modMass[it_mod_mass] = ptrSM[i];
+			fprintf(out, "%c", modMass[it_mod_mass]);
+			it_mod_mass++;
+		}
+		else
+		{
+			for (int j = 0; j < sizeInsStr; j++)
+			{
+				modMass[it_mod_mass] = insertedStr[j];
+				fprintf(out, "%c", modMass[it_mod_mass]);
+				it_mod_mass++;
+			}
+			_i++;
+		}
+	}
+	seek_pos = seek_pos + 512;
+	fclose(out);
+}
+
+int comparison_of_substrings(int i, int j, char* subStr, char* sourceStr, int sizeSubstr)
+{
+	int flag = 0;
+	while (i<sizeSubstr)
+	{
+		if (subStr[i] == sourceStr[j])
+		{
+			i++; j++;
 		}
 		else {
-			for (int j = it; j < sizeInsStr; j++)
-			{
-				modMass[j]= insertedStr[j]
-			}
+			return 0;
 		}
 	}
-
-
+	return 1;
 }
