@@ -89,7 +89,7 @@ int main()
 		break;
 	}
 
-	printf("\n\n");
+	printf("\n\n\n");
 	system("pause");
 	return 0;
 }
