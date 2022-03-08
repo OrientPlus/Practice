@@ -1,71 +1,65 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <locale.h>
 
 #include "Source.h"
 
-//найти заданную подстроку
-//заменить подстроку
 
-void ReplaceSubstring(char* ptrSM, char* subStr, int sizeSubstr, char* insertedStr, int sizeInsStr) //Ф-я замены подстроки
+void ReplaceSubstring(char* sourceMass, int sizeSM, char* subStr, int sizeSubstr, char* insertedStr, int sizeInsStr) //Ф-я замены подстроки
 {
-	static int seek_pos = 0;
 	FILE* out;
 	fopen_s(&out, "output.txt", "a");
-	fseek(out, seek_pos, SEEK_SET);
 
-	char* modMass = NULL;
-	modMass = (char*)malloc(1024 * sizeof(char)); //Массив хранящий текст с измененными подстроками
-	int *massIndex = (int*)malloc(512*sizeof(int)),
-		_i = 0,
-		sizeIndex = 0,
-		it_mod_mass = 0;
-	
+	int _i = 0,
+		* massIndex = (int*)malloc(512 * sizeof(int));
 
-	for (int i = 0; i <= 512; i++) //Ищет совпадения по первому символу. Если искомая подстрока полностью совпадает, сохраняет индекс первого эл-та в исх. строке
+	for (int i = 0; i < 512; i++) //Ищет совпадения по первому символу. Если искомая подстрока полностью совпадает, сохраняет индекс первого эл-та в исх. строке
 	{
-		if (subStr[0] == ptrSM[i])
+		if (sourceMass[i] == subStr[0])
 		{
-			if (comparison_of_substrings(0, i, &subStr[0], &ptrSM[0], sizeSubstr) == 1)
+			if (comparison_of_substrings(i, &subStr[0], &sourceMass[0], sizeSubstr) == 1)
 			{
 				massIndex[_i] = i;
 				_i++;
 			}	
 		}
 	}
-	sizeIndex = _i+1; //переменная хранящая размер массива.
-	massIndex = (int*)realloc(massIndex, sizeIndex * sizeof(int));
-	_i = 0;
 
-	//заменить подстроку в исходном тексте
-	//пишем в новый массив строку пока не встретим первую замену, пишем замену, пишем дальше исходную строку
-	//начиная с элемента (j+длина подстроки  тоесть ab->abcd => +2) пока не встретим очередную замену
-	// пишем модифицированную строку в файл, запоминаем позицию курсора.
-	for (int i = 0; i<511; i++)
+	massIndex = (int*)realloc(massIndex, _i * sizeof(int)); //освобождаем лишнюю память
+
+	if (massIndex == NULL)
+	{
+		for (int i = 0; i < sizeSM; i++)
+		{
+			fprintf(out, "%c", sourceMass[i]);
+		}
+		fclose(out);
+		return 1;
+	}
+
+	_i = 0;
+	for (int i=0; i < sizeSM; i++)
 	{
 		if (i != massIndex[_i])
-		{
-			modMass[it_mod_mass] = ptrSM[i];
-			fprintf(out, "%c", modMass[it_mod_mass]);
-			it_mod_mass++;
+		{ 
+			fprintf(out, "%c", sourceMass[i]); 
 		}
-		else
-		{
+		else {
 			for (int j = 0; j < sizeInsStr; j++)
 			{
-				modMass[it_mod_mass] = insertedStr[j];
-				fprintf(out, "%c", modMass[it_mod_mass]);
-				it_mod_mass++;
+				fprintf(out, "%c", insertedStr[j]);
 			}
+			i = i + (sizeSubstr-1);
 			_i++;
 		}
 	}
-	seek_pos = seek_pos + 512;
+	free(massIndex);
 	fclose(out);
 }
 
-int comparison_of_substrings(int i, int j, char* subStr, char* sourceStr, int sizeSubstr)
+int comparison_of_substrings(int j, char* subStr, char* sourceStr, int sizeSubstr)
 {
-	int flag = 0;
+	int flag = 0, i=0;
 	while (i<sizeSubstr)
 	{
 		if (subStr[i] == sourceStr[j])
@@ -78,3 +72,70 @@ int comparison_of_substrings(int i, int j, char* subStr, char* sourceStr, int si
 	}
 	return 1;
 }
+
+//char Read_text()
+//{
+//	FILE* in;
+//	char* sourceString = NULL, * subStr = NULL, * insertedStr = NULL;
+//	int sizeFile = 0, sizeSubstr = 0, sizeInsertedStr = 0, sizeSM = 0, i = 0, it_read = 0, tmp = 1;
+//
+//	sourceString = (char*)malloc(512 * sizeof(char));
+//
+//	printf("Source file: %s\n", argv[1]);
+//	printf("Source string: %s\nReplaced string: %s\n", argv[2], argv[3]);
+//
+//	fopen_s(&in, argv[1], "r");
+//	while (!feof(in))
+//	{
+//		tmp = fgetc(in);
+//		sizeFile++;
+//	}
+//
+//	insertedStr = &argv[3][0];
+//	subStr = &argv[2][0];
+//
+//	while (1) //получить размер искомой подстроки
+//	{
+//		if (subStr[i] != '\0') { i++; }
+//		else
+//			break;
+//	}
+//	sizeSubstr = i;
+//	i = 0;
+//	while (1) //получить размер заменяемой подстроки
+//	{
+//		if (insertedStr[i] != '\0') { i++; }
+//		else
+//			break;
+//	}
+//	sizeInsertedStr = i;
+//
+//	i = (sizeFile / 512) + 1;
+//	fseek(in, 0, SEEK_SET);
+//	if (sizeFile >= 512) //если файл больше 512 байт считываем блоками
+//	{
+//		while (i != 0)
+//		{
+//			it_read = 0;
+//			while (it_read < 512 && !feof(in))
+//			{
+//				fscanf_s(in, "%c", &sourceString[it_read]);
+//				it_read++;
+//			}
+//			i--;
+//			if (i == 0) sourceString = (char*)realloc(sourceString, (it_read - 1) * sizeof(char));
+//			it_read--;
+//			ReplaceSubstring(&sourceString[0], it_read, &subStr[0], sizeSubstr, &insertedStr[0], sizeInsertedStr); //ф-я замены подстроки
+//		}
+//	}
+//	else
+//	{
+//		for (int j = 0; j < sizeFile; j++)
+//			fscanf_s(in, "%c", &sourceString[j]);//если меньше считываем весь файл
+//		sourceString[sizeFile - 1] = '\0';
+//		sizeFile--;
+//		ReplaceSubstring(&sourceString[0], sizeFile, &subStr[0], sizeSubstr, &insertedStr[0], sizeInsertedStr); //ф-я замены подстроки
+//	}
+//	free(sourceString);
+//	fclose(in);
+//}

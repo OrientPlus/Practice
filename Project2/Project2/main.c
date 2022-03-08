@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <locale.h>
 
 #include "Source.h"
 
@@ -7,9 +8,12 @@
 
 int main(int argc, char* argv[])
 {
+	setlocale(LC_ALL, ".1251");
 	FILE* in;
-	char sourceString[512], *subStr = NULL, *insertedStr=NULL;
-	int sizeFile = 0, sizeSubstr=0, sizeInsertedStr=0, i=0, it_read=0, tmp =1;
+	char *sourceString = NULL, *subStr = NULL, *insertedStr=NULL;
+	int sizeFile = 0, sizeSubstr=0, sizeInsertedStr=0, sizeSM=0, i=0, it_read=0, tmp =1;
+
+	sourceString = (char*)malloc(512 * sizeof(char));
 	
 	printf("Source file: %s\n", argv[1]);
 	printf("Source string: %s\nReplaced string: %s\n", argv[2], argv[3]);
@@ -46,15 +50,16 @@ int main(int argc, char* argv[])
 	{
 		while (i != 0)
 		{
-			for (int j = 0; j < 512; j++)
+			it_read = 0;
+			while(it_read < 512 && !feof(in))
 			{
-				fscanf_s(in, "%c", &sourceString[j]);
-				if (sourceString[j] == EOF)
-					break;
+				fscanf_s(in, "%c", &sourceString[it_read]);
+				it_read++;
 			}
-			sourceString[511] = '\0';
 			i--;
-			ReplaceSubstring(&sourceString[0], &subStr[0], sizeSubstr, &insertedStr[0], sizeInsertedStr); //ф-я замены подстроки
+			if (i == 0) sourceString = (char*)realloc(sourceString, (it_read-1)*sizeof(char));
+			it_read--;
+			ReplaceSubstring(&sourceString[0], it_read, &subStr[0], sizeSubstr, &insertedStr[0], sizeInsertedStr); //ф-я замены подстроки
 		}
 	}
 	else
@@ -62,9 +67,10 @@ int main(int argc, char* argv[])
 		for (int j = 0; j < sizeFile; j++)
 			fscanf_s(in, "%c", &sourceString[j]);//если меньше считываем весь файл
 		sourceString[sizeFile - 1] = '\0';
-		ReplaceSubstring(&sourceString[0], &subStr[0], sizeSubstr, &insertedStr[0], sizeInsertedStr); //ф-я замены подстроки
+		sizeFile--;
+		ReplaceSubstring(&sourceString[0], sizeFile, &subStr[0], sizeSubstr, &insertedStr[0], sizeInsertedStr); //ф-я замены подстроки
 	}
-
+	free(sourceString);
 	fclose(in);
 	system("pause");
 	return 0;
