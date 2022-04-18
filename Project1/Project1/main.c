@@ -11,7 +11,7 @@ int main()
 	setlocale(0, "ru");
 	int n = 0,
 		notation,
-		size_first_array = 5,
+		size_first_array = 12,
 		i = 0,
 		switch_on = 0;
 	long long int
@@ -52,16 +52,16 @@ int main()
 			else {
 				first_array[i] = n;
 				i++;
-				if (i >= size_first_array - 1)
+				if (i == size_first_array - 1)
 				{
-					size_first_array = size_first_array + 2;
-					first_array = (int*)realloc(first_array, size_first_array * sizeof(int));
+					size_first_array = size_first_array + 3;
+					first_array = (char*)realloc(first_array, size_first_array * sizeof(char));
 				}
 			}
 		}
-		if (i <= size_first_array - 1) //ќптимизируем пам€ть, избавл€емс€ от пустых €чеек в массиве
+		if (i < size_first_array - 1) 
 		{
-			first_array = (int*)realloc(first_array, i * sizeof(int));
+			first_array = (char*)realloc(first_array, i * sizeof(char));
 			size_first_array = i;
 		}
 		n = my_atoi(&first_array[0], notation, size_first_array);
@@ -76,6 +76,13 @@ int main()
 			printf("\n\tERROR #20. The entered value goes beyond the INT type!\n");
 			system("pause");
 			exit(20);
+		}
+		else if (ItoA == 0)
+		{
+			printf("Translated number: %d", 0);
+			printf("\n\n\n");
+			system("pause");
+			return 0;
 		}
 
 		ptr = my_itoa(ItoA, notation);

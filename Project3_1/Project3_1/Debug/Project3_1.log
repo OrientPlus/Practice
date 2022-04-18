@@ -1,4 +1,14 @@
 ﻿  main.c
-C:\Users\gutro\Desktop\GIT\Практика\Project3_1\Project3_1\main.c(27,39): warning C4047: функция: "size_t" отличается по уровням косвенного обращения от "char *"
-C:\Users\gutro\Desktop\GIT\Практика\Project3_1\Project3_1\main.c(27,29): warning C4024: calloc: различные типы для формального и фактического параметров 1
-  Project3_1.vcxproj -> C:\Users\gutro\Desktop\GIT\Практика\Project3_1\Debug\Project3_1.exe
+  GENERATE.cpp
+C:\Users\gutro\Desktop\GIT 2.0\Практика\Project3_1\Project3_1\aitoia.h(9,41): error C2059: синтаксическая ошибка: ,
+C:\Users\gutro\Desktop\GIT 2.0\Практика\Project3_1\Project3_1\GENERATE.cpp(9,2): error C3861: get_option: идентификатор не найден
+C:\Users\gutro\Desktop\GIT 2.0\Практика\Project3_1\Project3_1\GENERATE.cpp(33,88): warning C4805: ==: небезопасное смешение типа "char" и типа "bool" в операции
+C:\Users\gutro\Desktop\GIT 2.0\Практика\Project3_1\Project3_1\GENERATE.cpp(45,46): error C2660: my_atoi: функция не принимает 3 аргументов
+C:\Users\gutro\Desktop\GIT 2.0\Практика\Project3_1\Project3_1\aitoia.h(9,5): message : см. объявление "my_atoi"
+C:\Users\gutro\Desktop\GIT 2.0\Практика\Project3_1\Project3_1\GENERATE.cpp(53,88): warning C4805: ==: небезопасное смешение типа "char" и типа "bool" в операции
+C:\Users\gutro\Desktop\GIT 2.0\Практика\Project3_1\Project3_1\GENERATE.cpp(64,46): error C2660: my_atoi: функция не принимает 3 аргументов
+C:\Users\gutro\Desktop\GIT 2.0\Практика\Project3_1\Project3_1\aitoia.h(9,5): message : см. объявление "my_atoi"
+C:\Users\gutro\Desktop\GIT 2.0\Практика\Project3_1\Project3_1\GENERATE.cpp(72,88): warning C4805: ==: небезопасное смешение типа "char" и типа "bool" в операции
+C:\Users\gutro\Desktop\GIT 2.0\Практика\Project3_1\Project3_1\GENERATE.cpp(83,46): error C2660: my_atoi: функция не принимает 3 аргументов
+C:\Users\gutro\Desktop\GIT 2.0\Практика\Project3_1\Project3_1\aitoia.h(9,5): message : см. объявление "my_atoi"
+C:\Users\gutro\Desktop\GIT 2.0\Практика\Project3_1\Project3_1\GENERATE.cpp(113,46): warning C4805: ==: небезопасное смешение типа "char" и типа "bool" в операции

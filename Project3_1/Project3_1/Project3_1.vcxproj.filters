@@ -21,9 +21,15 @@
     <ClCompile Include="aitoia.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="GENERATE.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aitoia.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="GENERATE.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

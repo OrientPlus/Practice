@@ -12,6 +12,13 @@ int my_atoi(char* array_symbols, int not, int size_array_symbols)
 	int tmp = 0, * array_codes = NULL, i = 0, output = 0, flag = 0;
 	array_codes = (int*)calloc(array_codes, size_array_symbols * sizeof(int));
 
+	if (array_symbols == NULL)
+	{
+		printf("\n\a /atoi/ ERROR! Empty source string!\n");
+		system("pause");
+		exit(0);
+	}
+
 	if (array_symbols[0] == 45) //Обработка отрицательных значений, убираем минус в 0 элементе массива
 	{
 		for (int i = 0; i < size_array_symbols - 1; i++)

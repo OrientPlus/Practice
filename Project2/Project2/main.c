@@ -8,8 +8,12 @@
 
 int main(int argc, char* argv[])
 {
-	setlocale(LC_ALL, ".1251");
-	REPLACE(argc, &argv[0]);
+	int done = 0;
+	done = REPLACE(argc, &argv[0]);
+	if (done == 0)
+		printf("\nThe replacement was successful!\n");
+	else
+		printf("\nThe replacement function failed with an error!\n");
 	system("pause");
 	return 0;
 }

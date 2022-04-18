@@ -1,4 +1,5 @@
 ﻿  main.c
-C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(40,9): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
-C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Project1_2\main.c(48,25): warning C4047: =: "char *" отличается по уровням косвенного обращения от "int"
-  Project1_2.vcxproj -> C:\Users\gutro\Desktop\GIT\Практика\Project1_2\Debug\Project1_2.exe
+C:\Users\gutro\Desktop\GIT 2.0\Практика\Project1_2\Project1_2\main.c(56,71): warning C4129: e: неизвестная escape-последовательность
+C:\Users\gutro\Desktop\GIT 2.0\Практика\Project1_2\Project1_2\main.c(78,9): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
+C:\Users\gutro\Desktop\GIT 2.0\Практика\Project1_2\Project1_2\main.c(86,25): warning C4047: =: "char *" отличается по уровням косвенного обращения от "int"
+  Project1_2.vcxproj -> C:\Users\gutro\Desktop\GIT 2.0\Практика\Project1_2\Debug\Project1_2.exe
