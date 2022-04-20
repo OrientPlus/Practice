@@ -7,9 +7,14 @@ typedef struct {
 }DEF_ALPH_OPT;
 
 typedef struct {
+	int flag, lucky[72];
+	char alphabet[72];
+}ALPH;
+
+typedef struct {
 	DEF_ALPH_OPT def_alph;
+	ALPH alph;
 	int minLen, maxLen, Len;
-	char* alph;
 }option;
 
 option op;

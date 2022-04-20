@@ -15,12 +15,7 @@ int main(int argc, char* argv[])
 		printf("%d -> ", i);
 		printf("%s\n", argv[i]);
 	}
-	j = 0;
-	while (argv[2][j] != '\0')
-	{
-		printf("%c", argv[2][j]);
-		j++;
-	}
+	
 	GEN(argc, &argv[0]);
 	system("pause");
 	return 0;
