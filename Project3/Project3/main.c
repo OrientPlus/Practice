@@ -15,7 +15,6 @@ int main(int argc, char* argv[])
 		printf("%d -> ", i);
 		printf("%s\n", argv[i]);
 	}
-	
 	GEN(argc, &argv[0]);
 	system("pause");
 	return 0;

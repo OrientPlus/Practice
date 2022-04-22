@@ -1,30 +1,40 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 #include "calculate.h"
 #include "GENERATE.h"
-
 
 
 int GEN(int argc, char** argv)
 {
 	srand(time(NULL));
 	op.def_alph.flag = 0;
+	op.def_alph.lucky_flag = 0;
 	op.alph.flag = 0;
 	op.Len = 0;
 	op.maxLen = 0;
 	op.minLen = 0;
 	get_option(argc, &argv[0]);
-
 	if (op.Len == 0)
 	{
+		if (op.minLen > op.maxLen)
+		{
+			printf("\n ERROR! The minimum password length cannot be greater than the maximum\n");
+			system("pause");
+			exit(1);
+		}
 		op.Len = op.minLen + rand() % (op.maxLen-10);
 	}
-	if (op.def_alph.flag == 1)
-	{
 
-	}
+	if (!op.def_alph.lucky_flag && op.def_alph.flag == 1)
+		get_def_rand_string();
+	else
+		get_def_rand_string_withChance();
+	free(password);
 }
 
 int get_option(int argc, char** argv)
@@ -155,7 +165,6 @@ int get_option(int argc, char** argv)
 int check_C_option(char* argv) //корректно работает только для двузначной вероятности 
 {
 	int length = 0, j = 0;
-	static int it_lucky = 0;
 
 	while (argv[j] != '\0')
 	{
@@ -166,6 +175,7 @@ int check_C_option(char* argv) //корректно работает только для двузначной вероят
 
 			if (argv[j + 1] == '[')
 			{
+				op.def_alph.lucky_flag++;
 				j += 2;
 				for (int i = 0; i < 2; i++) //цикл рассчитан на двузначное число вероятности
 				{
@@ -180,12 +190,9 @@ int check_C_option(char* argv) //корректно работает только для двузначной вероят
 						exit(10);
 					}
 				}
-				op.def_alph.lucky[it_lucky] = my_atoi(&argv[j - 2], 10, length);
-				it_lucky++;
-				j++;
+				op.def_alph.lucky[0] = my_atoi(&argv[j - 2], 10, length);
 			}
-			else
-				j++;
+			j++;
 		}
 		else if (argv[j] == 'A' )
 		{
@@ -194,6 +201,7 @@ int check_C_option(char* argv) //корректно работает только для двузначной вероят
 
 			if (argv[j + 1] == '[')
 			{
+				op.def_alph.lucky_flag++;
 				j += 2;
 				for (int i = 0; i < 2; i++)
 				{
@@ -208,10 +216,9 @@ int check_C_option(char* argv) //корректно работает только для двузначной вероят
 						exit(10);
 					}
 				}
-				op.def_alph.lucky[it_lucky] = my_atoi(&argv[j - 2], 10, length);
-				it_lucky++;
-				j++;
+				op.def_alph.lucky[1] = my_atoi(&argv[j - 2], 10, length);
 			}
+			j++;
 		}
 		else if (argv[j] == 'D' )
 		{
@@ -220,6 +227,7 @@ int check_C_option(char* argv) //корректно работает только для двузначной вероят
 			length = 0;
 			if (argv[j + 1] == '[')
 			{
+				op.def_alph.lucky_flag++;
 				j += 2;
 				for (int i = 0; i < 2; i++)
 				{
@@ -234,10 +242,10 @@ int check_C_option(char* argv) //корректно работает только для двузначной вероят
 						exit(10);
 					}
 				}
-				op.def_alph.lucky[it_lucky] = my_atoi(&argv[j - 2], 10, length);
-				it_lucky++;
+				op.def_alph.lucky[2] = my_atoi(&argv[j - 2], 10, length);
 				j++;
 			}
+			j++;
 		}
 		else if (argv[j] == 'S')
 		{
@@ -246,6 +254,7 @@ int check_C_option(char* argv) //корректно работает только для двузначной вероят
 			length = 0;
 			if (argv[j + 1] == '[')
 			{
+				op.def_alph.lucky_flag++;
 				j += 2;
 				for (int i = 0; i < 2; i++)
 				{
@@ -260,10 +269,9 @@ int check_C_option(char* argv) //корректно работает только для двузначной вероят
 						exit(10);
 					}
 				}
-				op.def_alph.lucky[it_lucky] = my_atoi(&argv[j - 2], 10, length);
-				it_lucky++;
-				j++;
+				op.def_alph.lucky[3] = my_atoi(&argv[j - 2], 10, length);
 			}
+			j++;
 		}
 		else {
 		printf("\nERROR! Incorrect arguments in the '-C' option\n");
@@ -375,4 +383,135 @@ int is_a_alphabet(char var)
 		if (i == 25)
 			return 0;
 	}
+}
+
+void get_def_rand_string()
+{
+	char optA[] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ" },
+		opta[] = { "abcdefghijklmnopqrstuvwxyz" },
+		optD[] = { "0123456789" },
+		optS[] = { "@#/+-=_*&%" },
+		userALPH[72] = {"\0"};
+	password = (char*)malloc((op.Len+1) * sizeof(char));
+	int length = 0, pos=0;
+
+	if (op.def_alph.plenty_A)
+		{
+			if (userALPH != NULL)
+				userALPH = strcat(userALPH, optA);
+			else
+			{
+				userALPH = (char*)malloc(28 * sizeof(char));
+				userALPH[27] = '\0';
+				strcpy(userALPH, optA);
+			}
+		}
+	if (op.def_alph.plenty_a)
+		{
+			if (userALPH != NULL)
+				userALPH = strcat(userALPH, opta);
+			else
+			{
+				userALPH = (char*)malloc(28 * sizeof(char));
+				userALPH[27] = '\0';
+				strcpy(userALPH, opta);
+			}
+		}		
+	if (op.def_alph.plenty_D)
+		{
+			if (userALPH != NULL)
+				userALPH = strcat(userALPH, optD);
+			else
+			{
+				userALPH = (char*)malloc(11 * sizeof(char));
+				userALPH[10] = '\0';
+				strcpy(userALPH, optD);
+			}
+		}
+	if (op.def_alph.plenty_S)
+		{
+			if (userALPH != NULL)
+				userALPH = strcat(userALPH, optS);
+			else
+			{
+				userALPH = (char*)malloc(11 * sizeof(char));
+				userALPH[10] = '\0';
+				strcpy(userALPH, optS);
+			}
+		}
+	
+	length = strlen(userALPH);
+	for (int i = 0; i < op.Len; i++)
+	{
+		pos = rand() % (length - 1);
+		password[i] = userALPH[pos];
+	}
+	password[op.Len] = '\0';
+	printf("\nGENERATED PASSWORD: %s\n", password);
+}
+
+void get_def_rand_string_withChance()
+{
+	char optA[] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ" },
+		opta[] = { "abcdefghijklmnopqrstuvwxyz" },
+		optD[] = { "0123456789" },
+		optS[] = { "@#/+-=_*&%" };
+	int length = 0, pos = 0, chance = 0, distr[8] = {0}, up = 0;
+	password = (char*)malloc((op.Len + 1) * sizeof(char));
+
+	if (op.def_alph.lucky[0])
+	{
+		distr[0] = 0;
+		distr[1] = op.def_alph.lucky[0];
+		up = op.def_alph.lucky[0];
+	}
+	if (op.def_alph.lucky[1])
+	{
+		distr[2] = up;
+		distr[3] = up + op.def_alph.lucky[1];
+		up = distr[3];
+	}
+	if (op.def_alph.lucky[2])
+	{
+		distr[4] = up;
+		distr[5] = up + op.def_alph.lucky[2];
+		up = distr[5];
+	}
+	if (op.def_alph.lucky[3])
+	{
+		distr[6] = up;
+		distr[7] = up + op.def_alph.lucky[3];
+	}
+	
+
+	for (int i = 0; i < op.Len; i++)
+	{
+		chance = rand() % 100;
+		if (chance >= distr[0] && chance < distr[1] && op.def_alph.lucky[0] != 0)
+		{
+			pos = rand() % 27;
+			password[i] = opta[pos];
+			continue;
+		}
+		if (chance >= distr[2] && chance < distr[3] && op.def_alph.lucky[1] != 0)
+		{
+			pos = rand() % 27;
+			password[i] = optA[pos];
+			continue;
+		}
+		if (chance >= distr[4] && chance < distr[5] && op.def_alph.lucky[2] != 0)
+		{
+			pos = rand() % 10;
+			password[i] = optD[pos];
+			continue;
+		}
+		if (chance >= distr[6] && chance < distr[7] && op.def_alph.lucky[3] != 0)
+		{
+			pos = rand() % 10;
+			password[i] = optS[pos];
+			continue;
+		}
+	}
+	password[op.Len] = '\0';
+	printf("\nGENERATED PASSWORD: %s\n", password);
 }
