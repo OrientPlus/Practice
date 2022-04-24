@@ -1,14 +1,35 @@
 #pragma once
-
+#include <stdbool.h>
 
 typedef struct {
-	int flag, lucky[4], lucky_flag,
-		plenty_a, plenty_A, plenty_D, plenty_S;
+	int lucky;
+	bool flag;
+}pla;
+typedef struct {
+	int lucky;
+	bool flag;
+}plA;
+typedef struct {
+	int lucky;
+	bool flag;
+}plD;
+typedef struct {
+	int lucky;
+	bool flag;
+}plS;
+
+typedef struct {
+	bool flag, lucky_flag;
+	pla a;
+	plA A;
+	plD D;
+	plS S;
 }DEF_ALPH_OPT;
 
 typedef struct {
-	int flag, lucky[72];
-	char alphabet[72];
+	bool flag;
+	int lucky[72], lucky_flag;
+	char alphabet[73];
 }ALPH;
 
 typedef struct {
@@ -24,3 +45,8 @@ int GEN(int argc, char** argv);
 int get_option(int argc, char** argv);
 void get_def_rand_string();
 void get_def_rand_string_withChance();
+void get_alph_rand_string();
+void get_alph_rand_string_withChance();
+void check_probability();
+void init_options();
+void algnment_prob(int prob, int zero_prob);

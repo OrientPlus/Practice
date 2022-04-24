@@ -12,7 +12,7 @@ int my_atoi(char* array_symbols, int not, int size_array_symbols)
 {
 	if (size_array_symbols == 0 || array_symbols == NULL || array_symbols[0] == '\0')
 	{
-		printf("ERROR! You entered empty string.\n");
+		printf("\n#my_aitoia::ERROR! You entered empty string.\n");
 		system("pause");
 		exit(3);
 	}
@@ -59,6 +59,10 @@ int my_atoi(char* array_symbols, int not, int size_array_symbols)
 	{
 		output = output * (-1);
 	}
+	if (output == 0)
+	{
+		printf("\n#my_aitoia::WARNING! Zero was passed to the function!\n");
+	}
 	return output;
 }
 
@@ -66,7 +70,7 @@ int my_itoa(int N, int notation)
 {
 	if (notation <= 1)
 	{
-		printf("ERROR! When translating from a number to a string, the number system must be specified! (not>=2)\n");
+		printf("\n#my_aitoia::ERROR! When translating from a number to a string, the number system must be specified! (not>=2)\n");
 		system("pause");
 		exit(3);
 	}
@@ -133,7 +137,7 @@ int sqr(int number, int power)
 		{
 			if ((tmp * base) > INT_MAX)
 			{
-				printf("\n\tERROR #3! You entered so big value! The value is outside the INT type.\n");
+				printf("\n#my_aitoia::ERROR #3! You entered so big value! The value is outside the INT type.\n");
 				system("pause");
 				exit(3);
 			}
@@ -153,7 +157,7 @@ int translate_string_to_number(int* mass, int size, int notation)
 	}
 	else if (_notation > notation )
 	{
-		printf("\n\tERROR #2! The entered character does not match the specified number system!\n");
+		printf("\n#my_aitoia::ERROR #2! The entered character does not match the specified number system!\n");
 		system("pause");
 		exit(2);
 	}
@@ -163,7 +167,7 @@ int translate_string_to_number(int* mass, int size, int notation)
 		Sqr = sqr(notation, power);
 		if ((result + mass[i] * Sqr) > INT_MAX)
 		{
-			printf("\n\tERROR #3! You entered so big value! The value is outside the int type.\n");
+			printf("\n#my_aitoia::ERROR #3! You entered so big value! The value is outside the int type.\n");
 			system("pause");
 			exit(3);
 		}
@@ -228,7 +232,7 @@ int check_enter(int N)
 	}
 	else
 	{
-		printf("\n\tERROR #4! Invalid symbols!\n");
+		printf("\n#my_aitoia::ERROR #4! Invalid symbols!\n");
 		system("pause");
 		exit(4);
 	}

@@ -10,12 +10,25 @@ int main(int argc, char* argv[])
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 	int j = 0;
+	int choise = 0;;
 	for (int i = 0; i < argc; i++)
 	{
 		printf("%d -> ", i);
 		printf("%s\n", argv[i]);
 	}
 	GEN(argc, &argv[0]);
+
+	while (1)
+	{
+		printf("\n\tGENERATE AGAIN? \n(y,n):");
+		choise = 0;
+		choise = getch(stdin);
+		if (choise == 'y')
+			GEN(argc, &argv[0]);
+		else
+			break;
+	}
+	printf("\n");
 	system("pause");
 	return 0;
 }
