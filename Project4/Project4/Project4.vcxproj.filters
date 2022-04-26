@@ -18,18 +18,12 @@
     <ClCompile Include="main.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="aitoia.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="GENERATE.cpp">
+    <ClCompile Include="sortStr.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="aitoia.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="GENERATE.h">
+    <ClInclude Include="sortStr.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
