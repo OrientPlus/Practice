@@ -15,6 +15,7 @@
 	1.3 Корректность передавамого значения вероятности алфавита
 	1.4 Корректность подопции алфавитов внутри опции -С
 	1.5 Проверка на пустоту опции
+	1.6 Заданная вероятность алфавитов <100
 
 		2. Общие проверки
 	2.1 Совместимость опций -m,-M и -n
@@ -31,12 +32,26 @@
 	3.3 Корректность передавамого значения вероятности символа
 	3.4 Корректность передаваемого символа (допустимый символ)
 	3.5 Проверка на пустоту опции
+	3.6 Заданная вероятность символов <100
 
 	================================================================================
 */
 
 int GEN(int argc, char** argv)
 {
+	printf("\nWARNING! If you specify the '-m' and '-M' options, the maximum length is 45, the minimum is 10!\n");
+	if (argc < 3)
+	{
+		printf("\nERROR! There are not enough parameters to generate a password!\n");
+		system("pause");
+		exit(1);
+	}
+	printf("\nPassed arguments:\n");
+	for (int i = 1; i < argc; i++)
+	{
+		printf("%d -> ", i);
+		printf("%s\n", argv[i]);
+	}
 	init_options();
 
 	srand(time(NULL));
@@ -116,7 +131,7 @@ int get_option(int argc, char** argv)
 			op.minLen = my_atoi(&(argv[i + 1][0]), 10, n);
 			continue;
 		}
-		if (argv[i][1] == 'M')
+		else if (argv[i][1] == 'M')
 		{
 			while (1)
 			{
@@ -137,7 +152,7 @@ int get_option(int argc, char** argv)
 			op.maxLen = my_atoi(&(argv[i + 1][0]), 10, n);
 			continue;
 		}
-		if (argv[i][1] == 'n')
+		else if (argv[i][1] == 'n')
 		{
 			while (1)
 			{
@@ -159,7 +174,7 @@ int get_option(int argc, char** argv)
 			op.Len = my_atoi(&(argv[i + 1][0]), 10, n);
 			continue;
 		}
-		if (argv[i][1] == 'a')
+		else if (argv[i][1] == 'a')
 		{
 			op.alph.flag = true;
 			if ( i+1<argc && argv[i+1][j] != NULL)
@@ -171,7 +186,7 @@ int get_option(int argc, char** argv)
 			}
 			continue;
 		}
-		if (argv[i][1] == 'C')
+		else if (argv[i][1] == 'C')
 		{
 			op.def_alph.flag = true;
 			
@@ -189,7 +204,13 @@ int get_option(int argc, char** argv)
 				system("pause");
 				exit(10);
 			}
+			i--;
 			continue;
+		}
+		else {
+			printf("\nERROR! Invalid option!\n");
+			system("pause");
+			exit(1);
 		}
 	}
 
@@ -252,7 +273,7 @@ int check_C_option(char* argv)
 			else
 				op.def_alph.a.flag = true;
 
-
+			length = 0;
 			if (argv[j + 1] == '[')
 			{
 				op.def_alph.lucky_flag++;
@@ -419,7 +440,7 @@ int check_a_option(char* argv)
 			{
 				if (argv[i + 1] == '[')
 				{
-					op.alph.lucky_flag = 1;
+					op.alph.lucky_flag++;
 					
 					if (!is_digits(argv[i+2]))
 					{
@@ -465,15 +486,24 @@ int check_a_option(char* argv)
 		j = j + op.alph.lucky[i];
 		if (j > 100)
 		{
-			printf("\nERROR! The total specified probability in the '-a' option exceeds 100%\n");
+			printf("\nERROR! The total specified probability in the '-a' option exceeds 100%%\nNow tottal probability: %d\n%%", j);
 			system("pause");
 			exit(1);
 		}
 	}
+	if (op.alph.lucky_flag == length - 1 && j < 100)
+	{
+		printf("\nERROR! If you set the probability of all characters manually, the total probability should be 100%%\nNow total probability: %d\n%%", j);
+		system("pause");
+		exit(1);
+	}
+	
+
 	
 	j = 0;
 	for (int i = 0; i < 73; i++)
 	{
+		j = 0;
 		for (int _i = 0; _i < length; _i++)
 		{
 			if (alph[i] == argv[_i])
@@ -557,8 +587,9 @@ void get_def_rand_string_withChance()
 		 opta[] = { "abcdefghijklmnopqrstuvwxyz" },
 		 optD[] = { "0123456789" },
 		 optS[] = { "@#/+-=_*&%" };
-	int length = 0, pos = 0, chance = 0, distr[8] = {0}, up = 0;
+	int length = 0, pos = 0, chance = 0, distr[8] = { 0 }, up = 0;
 	password = (char*)malloc((op.Len + 1) * sizeof(char));
+
 
 	if (op.def_alph.a.flag)
 	{
@@ -583,7 +614,6 @@ void get_def_rand_string_withChance()
 		distr[6] = up;
 		distr[7] = up + op.def_alph.S.lucky;
 	}
-	
 
 	for (int i = 0; i < op.Len; i++)
 	{
@@ -639,9 +669,9 @@ void get_alph_rand_string()
 void get_alph_rand_string_withChance()
 {
 	password = (char*)malloc((op.Len + 1) * sizeof(char));
-	int length = 0, pos = 0, it = 0, chance =0, overall_prob=0, NULLprob=0, tmp=0;
+	int length = 0, pos = 0, it = 0, chance =0, overall_prob=0, NULLprob=1, tmp=0;
 	char* userALPH = (char*)malloc(101 * sizeof(char));
-	double lenALPH;
+
 	while (op.alph.alphabet[it] != '\0')
 	{
 		overall_prob += op.alph.lucky[it];
@@ -670,6 +700,8 @@ void get_alph_rand_string_withChance()
 	}
 	if (tmp < 100) //Выравнивание алфавита. Недостающие позиции забиваются случайными символами из имеющегося алфавита
 	{
+		printf("\nWARNING! It is impossible to evenly divide the probabilities between all the characters of the password alphabet. \n\
+The remaining probability (%d%%) will be randomly distributed.\n", 100-tmp);
 		for (int i = tmp; i < 100; i++)
 		{
 			pos = rand() % tmp;
@@ -723,13 +755,13 @@ void check_probability()
 
 	if (prob > 100)
 	{
-		printf("\nERROR! The total specified probability in the '-C' option exceeds 100%\n");
+		printf("\nERROR! The total specified probability in the '-C' option exceeds 100%%\nNow total probability: %d%%\n", prob);
 		system("pause");
 		exit(1);
 	}
-	if (prob < 100 && op.def_alph.lucky_flag == 4)
+	if (prob < 100 && zero_prob == 0)
 	{
-		printf("\nERROR! If the probability is set manually for all sets. Its sum should be equal to 100%\n");
+		printf("\nERROR! If the probability is set manually for all sets. Its sum should be equal to 100%%\nNow total probability: %d%%\n", prob);
 		system("pause");
 		exit(1);
 	}
@@ -743,7 +775,8 @@ void check_probability()
 
 void algnment_prob(int prob, int zero_prob)
 {
-	int alg_var, tmpv = 0;
+	int alg_var, //распределенная вероятность
+		tmpv = 0; //остаток вероятности, если невозможно разделить нацело между алфавитами
 
 	if (zero_prob > 1)
 	{
@@ -764,6 +797,8 @@ void algnment_prob(int prob, int zero_prob)
 		/* Добиваем общую вероятность до 100%, если есть остаток */
 		if (tmpv != 0)
 		{
+			printf("\nWARNING! It is impossible to evenly divide the probabilities between all the characters of the password alphabet. \n\
+The remaining probability (%d%%) will be divided into special characters or small Latin characters.\n", tmpv);
 			if (op.def_alph.a.flag == true)
 				op.def_alph.a.lucky += tmpv;
 			else if (op.def_alph.S.flag == true)

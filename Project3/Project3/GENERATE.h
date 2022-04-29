@@ -19,7 +19,8 @@ typedef struct {
 }plS;
 
 typedef struct {
-	bool flag, lucky_flag;
+	bool flag;
+	int lucky_flag;
 	pla a;
 	plA A;
 	plD D;

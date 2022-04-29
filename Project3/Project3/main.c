@@ -10,12 +10,8 @@ int main(int argc, char* argv[])
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 	int j = 0;
-	int choise = 0;;
-	for (int i = 0; i < argc; i++)
-	{
-		printf("%d -> ", i);
-		printf("%s\n", argv[i]);
-	}
+	int choise = 0;
+	
 	GEN(argc, &argv[0]);
 
 	while (1)
