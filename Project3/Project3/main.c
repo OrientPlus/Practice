@@ -7,8 +7,6 @@
 
 int main(int argc, char* argv[])
 {
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
 	int j = 0;
 	int choise = 0;
 	

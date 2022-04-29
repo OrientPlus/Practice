@@ -17,6 +17,7 @@ void SORT()
     int (*fptr)(const char*, const char*) = NULL;
 
     GenerateRandomStrings(strings);
+    printf("\nGenerated array of strings:");
     PrintStrings(strings);
     printf("\n\
 (1) - Sort alphabetically(considering reg)\n\
@@ -36,7 +37,7 @@ void SORT()
 
     SortStrings(strings, STRINGS_COUNT, fptr);
     
-    
+    printf("\nSorted array:\n");
     PrintStrings(strings);
 }
 
@@ -66,7 +67,7 @@ void GenerateRandomStrings(char str[][MAX_STRING_SIZE]) {
 
 void PrintStrings(char strings[][MAX_STRING_SIZE])
 {
-    printf("\n======================================================\n");
+    printf("\n=====================================================================================\n");
     for (int i = 0; i < STRINGS_COUNT; i++)
     {
         printf("%d: ", i);
