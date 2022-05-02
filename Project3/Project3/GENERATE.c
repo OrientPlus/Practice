@@ -39,7 +39,7 @@
 
 int GEN(int argc, char** argv)
 {
-	printf("\nWARNING! If you specify the '-m' and '-M' options, the maximum length is 45, the minimum is 10!\n");
+	printf("\nWARNING! If you specify the '-m' and '-M' options, the maximum length is 100, the minimum is 10!\n");
 	if (argc < 3)
 	{
 		printf("\nERROR! There are not enough parameters to generate a password!\n");
@@ -245,7 +245,7 @@ int get_option(int argc, char** argv)
 		system("pause");
 		exit(1);
 	}
-	if ((op.minLen < 10 && op.minLen != 0) || (op.maxLen > 45 && op.maxLen != 0))
+	if ((op.minLen < 10 && op.minLen != 0) || (op.maxLen > 100 && op.maxLen != 0))
 	{
 		printf("\nERROR! Incorrect password length range!\n");
 		system("pause");
@@ -656,7 +656,7 @@ void get_alph_rand_string()
 		length++;
 		it++;
 	}
-
+	length++;
 	for (int i = 0; i < op.Len; i++)
 	{
 		pos = rand() % (length - 1);

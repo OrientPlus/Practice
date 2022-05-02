@@ -14,10 +14,10 @@ int main(int argc, char* argv[])
 
 	while (1)
 	{
-		printf("\n\tGENERATE AGAIN? \n(y,n):");
+		printf("\n\tGENERATE AGAIN? \n(ENTER - yes, another key - no):");
 		choise = 0;
 		choise = getch(stdin);
-		if (choise == 'y')
+		if (choise == 13)
 			GEN(argc, &argv[0]);
 		else
 			break;

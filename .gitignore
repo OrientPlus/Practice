@@ -62,3 +62,7 @@ dkms.conf
 *.log
 *.suo
 *.gpbdfp
+*.user
+*.vcxproj.*
+*.enc
+*.obj.*

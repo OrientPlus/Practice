@@ -5,8 +5,8 @@
 
 #include "sortStr.h"
 
-#define STRINGS_COUNT   10
-#define MAX_STRING_SIZE 100
+#define STRINGS_COUNT   10000
+#define MAX_STRING_SIZE 10
 
 
 void SORT()

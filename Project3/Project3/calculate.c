@@ -17,7 +17,7 @@ int my_atoi(char* array_symbols, int not, int size_array_symbols)
 		exit(3);
 	}
 	int tmp = 0, *array_codes = NULL, it = 0, output = 0, flag = 0;
-	array_codes = (int*)calloc(array_codes, size_array_symbols * sizeof(int));
+	array_codes = (int*)malloc(size_array_symbols * sizeof(int));
 
 	if (array_symbols[0] == 45) //Обработка отрицательных значений, убираем минус в 0 элементе массива
 	{
@@ -63,6 +63,7 @@ int my_atoi(char* array_symbols, int not, int size_array_symbols)
 	{
 		printf("\n#my_aitoia::WARNING! Zero was passed to the function!\n");
 	}
+	free(array_codes);
 	return output;
 }
 
