@@ -6,6 +6,8 @@
 #include "bigNum.h"
 #include "calculate.h"
 
+#define BLOCK_SIZE 5
+
 int get_nineCount(unsigned X, int j);
 bigInt* num1 = &a, * num2 = &b;
 
@@ -37,11 +39,11 @@ void initNumbers(char** argv)
 	num2->sign = false;
 	num2->zero = NULL;
 	result.sign = false;
-	num1->length = strlen(argv[1]) / 9;
-	if (strlen(argv[1]) - 9 * num1->length > 0)
+	num1->length = strlen(argv[1]) / BLOCK_SIZE;
+	if (strlen(argv[1]) - BLOCK_SIZE * num1->length > 0)
 		num1->length++;
-	num2->length = strlen(argv[3]) / 9;
-	if (strlen(argv[3]) - 9 * num1->length > 0)
+	num2->length = strlen(argv[3]) / BLOCK_SIZE;
+	if (strlen(argv[3]) - BLOCK_SIZE * num1->length > 0)
 		num2->length++;
 	num1->val = (unsigned*)malloc(num1->length * sizeof(unsigned));
 	num1->zero = (int*)malloc(num1->length * sizeof(int));
@@ -94,10 +96,10 @@ void getNumbers(int argc, char** argv)
 	
 	it = num1->length - 1;
 	strLen = strlen(argv[1]);
-	for (int i = 0; i < strLen / 9 + 1; i++)
+	for (int i = 0; i < strLen / BLOCK_SIZE + 1; i++)
 	{
-		n = 9 * (i + 1);
-		for (int j = 9; j > 0; j--)
+		n = BLOCK_SIZE * (i + 1);
+		for (int j = BLOCK_SIZE; j > 0; j--)
 		{
 			if (strLen - n >=0)
 				tmp = tmp * 10 + argv[1][strLen - n] - '0';
@@ -112,10 +114,10 @@ void getNumbers(int argc, char** argv)
 	tmp = 0;
 	it = num2->length-1;
 	strLen = strlen(argv[3]);
-	for (int i = 0; i < strLen / 9 + 1; i++)
+	for (int i = 0; i < strLen / BLOCK_SIZE + 1; i++)
 	{
-		n = 9 * (i + 1);
-		for (int j = 9; j > 0; j--)
+		n = BLOCK_SIZE * (i + 1);
+		for (int j = BLOCK_SIZE; j > 0; j--)
 		{
 			if (strLen - n >= 0)
 				tmp = tmp * 10 + argv[3][strLen - n] - '0';
@@ -156,10 +158,10 @@ void add(bool sign)
 
 	tmpMass = (int**)malloc(result.length * sizeof(int*));
 	for (int i = 0; i < result.length; i++)
-		tmpMass[i] = (int*)malloc(9 * sizeof(int));
+		tmpMass[i] = (int*)malloc(BLOCK_SIZE * sizeof(int));
 	for (int i = 0; i < result.length; i++)
 	{
-		for (int j = 0; j < 9; j++)
+		for (int j = 0; j < BLOCK_SIZE; j++)
 			tmpMass[i][j] = 0;
 	}
 
@@ -171,12 +173,18 @@ void add(bool sign)
 			X = num1->val[n1_it];
 		if (n2_it >=0)
 			Y = num2->val[n2_it];
-		for (int j = 0; j < 9; j++)
+		for (int j = 0; j < BLOCK_SIZE; j++)
 		{
 			x = X % 10;
 			y = Y % 10;
 			if ((x == 0 && X == 0) && (y == 0 && Y == 0))
+			{
+				if (divide == 1)
+				{
+					tmpMass[(result.length - 1) - i][(BLOCK_SIZE - 1) - j] = divide;
+				}
 				break;
+			}
 			if ((x == 0 && X == 0) || (y == 0 && Y == 0))
 			{
 				if (x == 0)
@@ -189,7 +197,7 @@ void add(bool sign)
 				}
 				else
 					divide = 0;
-				tmpMass[(result.length - 1) - i][8 - j] = x;
+				tmpMass[(result.length - 1) - i][(BLOCK_SIZE-1) - j] = x;
 				X = X / 10;
 				Y = Y / 10;
 				continue;
@@ -202,7 +210,7 @@ void add(bool sign)
 			}
 			else
 				divide = 0;
-			tmpMass[(result.length - 1) - i][8 - j] = x;
+			tmpMass[(result.length - 1) - i][(BLOCK_SIZE-1) - j] = x;
 			X = X / 10;
 			Y = Y / 10;
 		}
@@ -215,7 +223,7 @@ void add(bool sign)
 	printf("\n\n");
 	for (int i = 0; i < result.length; i++)
 	{
-		for (int j = 0; j < 9; j++)
+		for (int j = 0; j < BLOCK_SIZE; j++)
 		{
 			if (tmpMass[i][j] == 0 && flag == 0)
 				continue;
@@ -241,10 +249,10 @@ void subtract(bool sign)
 
 	tmpMass = (int**)malloc(result.length * sizeof(int*));
 	for (int i = 0; i < result.length; i++)
-		tmpMass[i] = (int*)malloc(9 * sizeof(int));
+		tmpMass[i] = (int*)malloc(BLOCK_SIZE * sizeof(int));
 	for (int i = 0; i < result.length; i++)
 	{
-		for (int j = 0; j < 9; j++)
+		for (int j = 0; j < BLOCK_SIZE; j++)
 			tmpMass[i][j] = 0;
 	}
 
@@ -256,7 +264,7 @@ void subtract(bool sign)
 			X = num1->val[n1_it];
 		if (n2_it >= 0)
 			Y = num2->val[n2_it];
-		for (int j = 0; j < 9; j++)
+		for (int j = 0; j < BLOCK_SIZE; j++)
 		{
 			x = X % 10;
 			y = Y % 10;
@@ -281,7 +289,7 @@ void subtract(bool sign)
 					nine_count = get_nineCount(X, j);
 					x = 10 + x;
 					x -= y;
-					tmpMass[(result.length - 1) - i][8 - j] = x;
+					tmpMass[(result.length - 1) - i][(BLOCK_SIZE-1) - j] = x;
 					X = X / 10;
 					Y = Y / 10;
 					div = 0;
@@ -293,7 +301,7 @@ void subtract(bool sign)
 			else
 				div = 0;
 			x -= y;
-			tmpMass[(result.length - 1) - i][8 - j] = x;
+			tmpMass[(result.length - 1) - i][(BLOCK_SIZE-1) - j] = x;
 			X = X / 10;
 			Y = Y / 10;
 		}
@@ -304,7 +312,7 @@ void subtract(bool sign)
 	printf("\n\n");
 	for (int i = 0; i < result.length; i++) //Формируем слово большого числа из полученных значений разрядов
 	{
-		for (int j = 0; j < 9; j++)
+		for (int j = 0; j < BLOCK_SIZE; j++)
 		{
 			if (tmpMass[i][j] == 0 && flag == 0)
 				continue;
@@ -356,7 +364,7 @@ int get_nineCount(unsigned X, int j)
 	int n = -1;
 	X /= 10;
 	if (X == 0)
-		return 7 -j;
+		return 3 -j;
 	while (1)
 	{
 		if (X % 10 == 0)
@@ -445,26 +453,6 @@ void operation_definition(char op)
 
 void swapBigNum()
 {
-	/*unsigned* tmp = (unsigned*)malloc(result.length - 1 * sizeof(unsigned)), tmpLen=0;
-	if (num1.length > num2.length)
-	{
-		num2.val = (unsigned*)realloc(num2.val, num1.length * sizeof(unsigned));
-		for (int i = 0; i < (num1.length - num2.length); i++)
-			num2.val[i] = 0;
-	}
-	else {
-		num1.val = (unsigned*)realloc(num1.val, num2.length * sizeof(unsigned));
-		for (int i = 0; i < (num1.length - num2.length); i++)
-			num1.val[i] = 0;
-	}
-	for (int i = 0; i < result.length - 1; i++)
-	{
-		tmp[i] = num1.val[i];
-		num1.val[i] = num2.val[i];
-	}
-	if (num1.length > num2.length)
-		num1.val = */
-
 	bigInt *tmp;
 	tmp = num1;
 	num1 = num2;
@@ -477,7 +465,7 @@ void word_alignment(bigInt *num)
 	for (int i = 0; i < num->length; i++)
 	{
 		tmp = num->val[i];
-		while (tmp < 100000000)
+		while (tmp < 10000)
 		{
 			if (tmp == 0 && flag == 0)
 				break;
@@ -522,28 +510,6 @@ void realloc_result()
 
 void mult_block(unsigned X, unsigned Y)
 {
-	char ALPH[] = { "0123456789ABCDEF" };
-	int it = 0, len1 = 0, len2 = 0, len3=0;
-	char* str1, *str2, str3 = NULL, tmp = NULL;
-	str1 = my_itoa(X, 16);
-	str2 = my_itoa(Y, 16);
-	while (str1[it] != '\0')
-	{
-		len1++;
-		it++;
-	}
-	it = 0;
-	while (str2[it] != '\0')
-	{
-		len2++;
-		it++;
-	}
-	if (len1 > len2)
-		len3 = len1;
-	else
-		len3 = len2;
-	len3+=2;
-	str3 = (char*)malloc(len3 * sizeof(char));
-	tmp = (char*)malloc(len3 * sizeof(char));
+	
 
 }
