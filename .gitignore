@@ -63,6 +63,7 @@ dkms.conf
 *.suo
 *.gpbdfp
 *.user
-*.vcxproj.*
 *.enc
 *.obj.*
+*.vcxproj
+*.vcxproj*
