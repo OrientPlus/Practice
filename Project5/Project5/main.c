@@ -3,13 +3,9 @@
 
 #include "bigNum.h"
 
-int main(int argc, char* argv[])
+int main()
 {
-	for (int i = 1; i < argc; i++)
-	{
-		printf("\narg[%d] = %s", i, argv[i]);
-	}
-	bigNum(argc, &argv[0]);
+	bigNum();
 	
 	
 	printf("\n\n");

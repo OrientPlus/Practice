@@ -12,19 +12,23 @@ typedef struct {
 bigInt a, b, result;
 
 
-int bigNum(int argc, char** argv);
-void getNumbers(int argc, char** argv);
-void printBigNum(bigInt *num);
+int bigNum();
+void getNumbers(int argc, char** argv, bool flag);
+void printBigNum_dec(bigInt *num);
+void printBigNum_hex(bigInt* num);
 void initNumbers(char** argv);
+void check_numbers(int argc, char** argv);
 
-void divide();
-void multiply();
+void divide(bool sign);
+void multiply(bool sign);
 void add(bool sign);
 void subtract(bool sign);
-void remains();
 
 void operation_definition(char op);
 void swapBigNum();
 void word_alignment(bigInt* num);
 void realloc_result();
-void mult_block(unsigned X, unsigned Y);
+void alignment_mult_val(unsigned** mass, int n, int len, int oldLen);
+int get_nineCount(unsigned X, int j);
+
+bool get_numbers_from_console(char** numbers);
