@@ -2,32 +2,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <stdbool.h>
 
 #include "bigNum.h"
 #include "calculate.h"
 
 #define BLOCK_SIZE 4
 
-//==============___1___====================
-//получить число из 16-ричной строки
-//реализовать деление
-//переписать структуру большого числа
-//переписать/написать новый вывод числа
-//
-//=============___2___====================
-// получить число из 16-ричной строки
-// переписать структуру большого числа 
-// переписать выделение пам€ти
-// переписать инициализацию
-// переписать сложение
-// переписать вычитание
-// переписать умножение
-// реализовать деление
-// переписать вывод
-//
-
-
-supportMASS* num1 = &a, * num2 = &b, *res = &c;
+bigInt* num1 = &a, * num2 = &b;
 
 
 int bigNum(int argc, char** argv)
@@ -44,23 +26,21 @@ int bigNum(int argc, char** argv)
 	initNumbers(&numbers[0]);
 	getNumbers(3, &numbers[0], hexFlag);
 	printf("\n\nFirst number: ");
-	printBigNum_dec(num1);
+	printBigNum(num1);
+	printf("\nOperation: %c", numbers[1][0]);
 	printf("\nSecond number: ");
-	printBigNum_dec(num2);
+	printBigNum(num2);
 
 	operation_definition(numbers[1][0]);
 
 	printf("\nResult number: ");
-	printBigNum_dec(res);
-	free(num1->zero);
-	free(num2->zero);
-	free(result.val);
+	printBigNum(&result);
 }
 
 void check_numbers(int argc, char** argv)
 {
-	char alph[] = { "-0123456789" };
-	char opr[] = { "+-*" },
+	char alph[] = { "-0123456789ABCDEF" };
+	char opr[] = { "+-*/" },
 		ch;
 	int it = 0, sFlag = 0;
 	
@@ -69,7 +49,7 @@ void check_numbers(int argc, char** argv)
 	{
 		if (ch == '\0')
 			break;
-		for (int i = 0; i < 11; i++)
+		for (int i = 0; i < 17; i++)
 		{
 			if (ch == alph[i])
 			{
@@ -83,7 +63,7 @@ void check_numbers(int argc, char** argv)
 					sFlag = 1;
 				break;
 			}
-			else if (i == 10)
+			else if (i == 16)
 			{
 				printf("\nERROR! Invalid first number\n");
 				system("pause");
@@ -98,7 +78,7 @@ void check_numbers(int argc, char** argv)
 	{
 		if (ch == '\0')
 			break;
-		for (int i = 0; i < 11; i++)
+		for (int i = 0; i < 17; i++)
 		{
 			if (ch == alph[i])
 			{
@@ -112,7 +92,7 @@ void check_numbers(int argc, char** argv)
 					sFlag = 1;
 				break;
 			}
-			else if (i == 10)
+			else if (i == 16)
 			{
 				printf("\nERROR! Invalid second number\n");
 				system("pause");
@@ -122,11 +102,11 @@ void check_numbers(int argc, char** argv)
 		it++;
 	}
 	ch = argv[1][0];
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		if (ch == opr[i])
 			break;
-		else if (i == 2)
+		else if (i == 3)
 		{
 			printf("\nERROR! Invalid operation!\n");
 			system("pause");
@@ -139,9 +119,7 @@ void initNumbers(char** argv)
 {
 	int tmp=0;
 	num1->sign = false;
-	num1->zero = NULL;
 	num2->sign = false;
-	num2->zero = NULL;
 	result.sign = false;
 	
 	num1->length = strlen(argv[0]);
@@ -171,48 +149,59 @@ void initNumbers(char** argv)
 	}
 
 	
-	num1->val = (unsigned*)malloc(num1->length * sizeof(unsigned));
-	num1->zero = (int*)malloc(num1->length * sizeof(int));
-	num2->val = (unsigned*)malloc(num2->length * sizeof(unsigned));
-	num2->zero = (int*)malloc(num2->length * sizeof(int));
+	num1->val = (char**)malloc(num1->length * sizeof(char*));
+	num2->val = (char**)malloc(num2->length * sizeof(char*));
 
 	
 	for (int i = 0; i < num1->length; i++)
 	{
-		num1->val[i] = 0;
-		num1->zero[i] = 0;
+		num1->val[i] = (char*)malloc(BLOCK_SIZE * sizeof(char));
+		for (int j = 0; j < BLOCK_SIZE; j++)
+			num1->val[i][j] = 'N';
 	}
 	for (int i = 0; i < num2->length; i++)
 	{
-		num2->val[i] = 0;
-		num2->zero[i] = 0;
+		num2->val[i] = (char*)malloc(BLOCK_SIZE * sizeof(char));
+		for (int j = 0; j < BLOCK_SIZE; j++)
+			num2->val[i][j] = 'N';
 	}
 
 	//------------------Initializing the result-----------------//
-	if (num1->length > num2->length)
-		res->length = num1->length + 1;
-	else
-		result.length = num2->length + 1;
-	res->val = (unsigned*)malloc(res->length * sizeof(unsigned));
-	res->zero = (int*)malloc(res->length * sizeof(int));
-
-	for (int i = 0; i < res->length; i++)
+	if (argv[1][0] == '+' && num1->length == num2->length && (argv[0][0] + argv[2][0] >= 120))
+		result.length = num1->length + 1;
+	else if (argv[1][0] == '+')
 	{
-		res->val[i] = 0;
-		res->zero[i] = 0;
+		if (num1->length > num2->length)
+			result.length = num1->length;
+		else
+			result.length = num2->length;
 	}
-	
-	result.length = 10;
+	else if (argv[1][0] == '-')
+	{
+		if (num1->length > num2->length)
+			result.length = num1->length;
+		else
+			result.length = num2->length;
+	}
+	else if (argv[1][0] == '*')
+		result.length = num1->length + num2->length;
+	else if (argv[1][0] == '/')
+		result.length = num2->length; //заглушка; необходимо корректно опеределить длину при делении
+
 	result.val = (char**)malloc(result.length * sizeof(char*));
 	for (int i = 0; i < result.length; i++)
-		result.val[i] = (char*)malloc(8 * sizeof(char));
+	{
+		result.val[i] = (char*)malloc(BLOCK_SIZE * sizeof(char));
+		for (int j = 0; j < BLOCK_SIZE; j++)
+			result.val[i][j] = 'N';
+	}
 }
 
 void getNumbers(int argc, char** argv)
 {
 	int it = 0,
 		strLen, n, flag = 0, hexF =0;
-	unsigned tmp = 0;
+	char tmp = 0;
 	
 	if (argv[0][0] == '-')
 	{
@@ -225,359 +214,442 @@ void getNumbers(int argc, char** argv)
 		num2->sign = true;
 	}
 
-	it = num1->length - 1;
 	strLen = strlen(argv[0]);
-	for (int i = 0; i < strLen / BLOCK_SIZE + 1; i++)
+	n = strLen -1;
+	for (int i = num1->length-1; i>=0;  i--)
 	{
-		n = BLOCK_SIZE * (i + 1);
-		for (int j = BLOCK_SIZE; j > 0; j--)
+		for (int j = BLOCK_SIZE - 1; j >= 0; j--)
 		{
-			if (strLen - n >= 0)
-				tmp = tmp * 10 + argv[0][strLen - n] - '0';
+			if (n == -1)
+				break;
+			num1->val[i][j] = argv[0][n];
 			n--;
 		}
-		num1->val[it] = tmp;
-		tmp = 0;
-		it--;
 	}
-	word_alignment(num1);
 
-	tmp = 0;
-	it = num2->length-1;
 	strLen = strlen(argv[2]);
-	for (int i = 0; i < strLen / BLOCK_SIZE + 1; i++)
+	n = strLen - 1;
+	for (int i = num2->length - 1; i >= 0; i--)
 	{
-		n = BLOCK_SIZE * (i + 1);
-		for (int j = BLOCK_SIZE; j > 0; j--)
+		for (int j = BLOCK_SIZE - 1; j >= 0; j--)
 		{
-			if (strLen - n >= 0)
-				tmp = tmp * 10 + argv[2][strLen - n] - '0';
+			if (n == -1)
+				break;
+			num2->val[i][j] = argv[2][n];
 			n--;
 		}
-		num2->val[it] = tmp;
-		tmp = 0;
-		it--;
 	}
-	word_alignment(num2);
+	
 }
 
-void printBigNum_dec(supportMASS *num)
+void printBigNum(bigInt *num)
 {
 	if (num->sign)
 		printf("-");
 	for (int i = 0; i < num->length; i++)
 	{
-		if (i > 0)
+		for (int j = 0; j < BLOCK_SIZE; j++)
 		{
-			while (num->zero[i] > 0) {
-				num->zero[i]--;
-				printf("%d", 0);
-			}
+			if (num->val[i][j] != 'N' )
+				printf("%c", num->val[i][j]);
 		}
-		if (num->val[i] != 0)
-			printf("%u", num->val[i]);
 	}
 }
 
-void add(bool sign)
+void ADD(bool sign, bigInt *n1, bigInt *n2)
 {
-	unsigned x = 0, y = 0, divide = 0,
-		X = 0, Y = 0;
-	int n1_it = num1->length - 1, n2_it = num2->length - 1, flag = 0;
-	int** tmpMass = NULL;
+	char TABLE[16][16][2] = {
+		{ {"00"}, {"01"}, {"02"}, {"03"}, {"04"}, {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"} },
+		{ {"01"}, {"02"}, {"03"}, {"04"}, {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"} },
+		{ {"02"}, {"03"}, {"04"}, {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"} },
+		{ {"03"}, {"04"}, {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"} },
+		{ {"04"}, {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"} },
+		{ {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"} },
+		{ {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"} },
+		{ {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"} },
+		{ {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"} },
+		{ {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"} },
+		{ {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"} },
+		{ {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"}, {"1A"} },
+		{ {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"}, {"1A"}, {"1B"} },
+		{ {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"}, {"1A"}, {"1B"}, {"1C"} },
+		{ {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"}, {"1A"}, {"1B"}, {"1C"}, {"1D"} },
+		{ {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"}, {"1A"}, {"1B"}, {"1C"}, {"1D"}, {"1E"} }
+	};
+	int n1_it = n1->length - 1, 
+		n2_it = n2->length - 1, 
+		 div=0,
+		x, y, j = 0;
+	char** tmpMass = NULL;
+	bool flag = false;
 
 
-	tmpMass = (int**)malloc(res->length * sizeof(int*));
-	for (int i = 0; i < res->length; i++)
-		tmpMass[i] = (int*)malloc(BLOCK_SIZE * sizeof(int));
-	for (int i = 0; i < res->length; i++)
+	tmpMass = (char**)malloc(result.length * sizeof(char*));
+	for (int i = 0; i < result.length; i++)
+		tmpMass[i] = (char*)malloc(BLOCK_SIZE * sizeof(char));
+	for (int i = 0; i < result.length; i++)
 	{
-		for (int j = 0; j < BLOCK_SIZE; j++)
-			tmpMass[i][j] = 0;
+		for (int _j = 0; _j < BLOCK_SIZE; _j++)
+			tmpMass[i][_j] = 0;
 	}
 
-	for (int i = 0; i < res->length; i++)
+	for (int i = result.length -1; i >= 0; i--)
 	{
 		if (n1_it <= -1 && n2_it <= -1)
-			break;
-		if (n1_it >=0)
-			X = num1->val[n1_it];
-		if (n2_it >=0)
-			Y = num2->val[n2_it];
-		for (int j = 0; j < BLOCK_SIZE; j++)
 		{
-			x = X % 10;
-			y = Y % 10;
-			if ((x == 0 && X == 0) && (y == 0 && Y == 0))
+			if (div != 0)
 			{
-				if (divide == 1)
-				{
-					tmpMass[(res->length - 1) - i][(BLOCK_SIZE - 1) - j] = divide;
-				}
-				break;
+				if (j == -1)
+					j = BLOCK_SIZE - 1;
+				tmpMass[i][j] = int_to_char(div);
 			}
-			if ((x == 0 && X == 0) || (y == 0 && Y == 0))
+			break;
+		}
+		for (j = BLOCK_SIZE - 1; j >= 0; j--)
+		{
+			if (n1_it >= 0 && n2_it >= 0)
 			{
-				if (x == 0)
-					x = y;
-				x += divide;
-				if (x >= 10)
+				if (n2->val[n2_it][j] == 'N')
+					n2->val[n2_it][j] = '0';
+				if (n1->val[n1_it][j] == 'N')
 				{
-					divide = 1;
-					x = x % 10;
+					tmpMass[i][j] = 'N';
+					break;
+				}
+				x = char_to_int(n1->val[n1_it][j]);
+				y = char_to_int(n2->val[n2_it][j]);
+
+				if (x != 15)
+					x = x + div;
+				else if (y != 15)
+					y = y + div;
+				else if (flag)
+				{
+					tmpMass[i][j] = TABLE[x][y][1]+1;
+					if (TABLE[x][y][0] != '0')
+						div = 1;
+					else
+						div = 0;
+					continue;
+				}
+				tmpMass[i][j] = TABLE[x][y][1];
+				if (TABLE[x][y][0] != '0')
+					div = 1;
+				else
+					div = 0;
+				flag = true;
+			}
+			else if (n1_it >= 0 && n2_it < 0)
+			{
+				if (div != 0)
+				{
+					if (n1->val[n1_it][j] == 'N')
+						n1->val[n1_it][j] = '0';
+					x = char_to_int(n1->val[n1_it][j]);
+					y = div;
+					tmpMass[i][j] = TABLE[x][y][1];
+					if (TABLE[x][y][0] != '0')
+						div = char_to_int(TABLE[x][y][0]);
+					else
+						div = 0;
 				}
 				else
-					divide = 0;
-				tmpMass[(res->length - 1) - i][(BLOCK_SIZE-1) - j] = x;
-				X = X / 10;
-				Y = Y / 10;
-				continue;
+					tmpMass[i][j] = n1->val[n1_it][j];
 			}
-			x += y + divide;
-			if (x >= 10)
-			{
-				divide = 1;
-				x = x % 10;
-			}
-			else
-				divide = 0;
-			tmpMass[(res->length - 1) - i][(BLOCK_SIZE-1) - j] = x;
-			X = X / 10;
-			Y = Y / 10;
 		}
-
 		n1_it--;
 		n2_it--;
 	}
 
 
 	printf("\n\n");
-	for (int i = 0; i < res->length; i++)
+	for (int i = 0; i < result.length; i++)
 	{
 		for (int j = 0; j < BLOCK_SIZE; j++)
 		{
-			if (tmpMass[i][j] == 0 && flag == 0)
-				continue;
-			else
-			{
-				res->val[i] = res->val[i] * 10 + tmpMass[i][j];
-				flag = 1;
-			}
+			result.val[i][j] = tmpMass[i][j];
 		}
 	}
-	realloc_result();
-	word_alignment(res);
 	if (sign)
-		res->sign = true;
+		result.sign = true;
 }
 
-void subtract(bool sign, supportMASS *n1, supportMASS *n2)
+void SUBTRACT(bool sign, bigInt *n1,  bigInt *n2)
 {
-	int x, y, X, Y;
-	int div = 0, nine_count = -2, it_I = 0, zero_count = 0;
-	int n1_it = n1->length - 1, n2_it = n2->length - 1, flag = 0;
-	int** tmpMass = NULL;
+	int n1_it = n1->length - 1,
+		n2_it = n2->length - 1,
+		flag = 0, div = 0,
+		x, y, X, Y, nine_count = -2;
+	char** tmpMass = NULL;
 
-	tmpMass = (int**)malloc(res->length * sizeof(int*));
-	for (int i = 0; i < res->length; i++)
-		tmpMass[i] = (int*)malloc(BLOCK_SIZE * sizeof(int));
-	for (int i = 0; i < res->length; i++)
+	tmpMass = (char**)malloc(result.length * sizeof(char*));
+	for (int i = 0; i < result.length; i++)
+		tmpMass[i] = (char*)malloc(BLOCK_SIZE * sizeof(char));
+	for (int i = 0; i < result.length; i++)
 	{
 		for (int j = 0; j < BLOCK_SIZE; j++)
 			tmpMass[i][j] = 0;
 	}
 
-	for (int i = 0; i < res->length; i++)
+	for (int i = result.length-1; i >= 0;  i--)
 	{
 		if (n1_it <= -1 && n2_it <= -1)
 			break;
-		if (n1_it >= 0)
-			X = n1->val[n1_it];
-		if (n2_it >= 0)
-			Y = n2->val[n2_it];
-		for (int j = 0; j < BLOCK_SIZE; j++)
+		for (int j = BLOCK_SIZE - 1; j >= 0; j--)
 		{
-			x = X % 10;
-			y = Y % 10;
+			//===========================================================
+			X = n1->val[n1_it][j];
+			if (n2_it >= 0)
+				Y = n2->val[n2_it][j];
+			else 
+				Y = '0';
+			if (Y == 'N')
+				Y = '0';
+			//===========================================================
+			x = char_to_int(X);
+			y = char_to_int(Y);
+
+			
 			if (nine_count >= 0 && x == 0)
 			{
-				x = 9;
+				x = 'F' - '0' - 7;
 				nine_count--;
 			}
 			else if (div == 1 || nine_count == -1)
 			{
-				x--;
+				x = x-div;
+				div = 0;
 				nine_count--;
 			}
-			if ((x == 0 && X == 0) && (y == 0 && Y == 0))
+			if ((x == 0 && X == '0') && (y == 0 && Y == '0'))
 				break;
+
+			x = x - div;
 			if (x < y)
 			{
-				unsigned t = X;
-				t = X / 10;
-				if (t % 10 == 0)
+				if (n1->val[n1_it][j - 1] == '0')
 				{
-					nine_count = get_nineCount(X, j);
-					x = 10 + x;
+					nine_count = get_zero_count(n1, n1_it, j);
+					x += 16;
 					x -= y;
-					tmpMass[(res->length - 1) - i][(BLOCK_SIZE-1) - j] = x;
-					X = X / 10;
-					Y = Y / 10;
+					tmpMass[i][j] = int_to_char(x);
 					div = 0;
 					continue;
 				}
-				x = 10 + x;
+				x += 16;
+				x -= y;
+				tmpMass[i][j] = int_to_char(x);
 				div = 1;
+				continue;
 			}
 			else
 				div = 0;
 			x -= y;
-			tmpMass[(res->length - 1) - i][(BLOCK_SIZE-1) - j] = x;
-			X = X / 10;
-			Y = Y / 10;
+			tmpMass[i][j] = int_to_char(x);
 		}
 		n2_it--;
 		n1_it--;
 	}
 
-	printf("\n\n");
-	for (int i = 0; i < res->length; i++) //‘ормируем слово большого числа из полученных значений разр€дов
+	for (int i = 0; i < result.length; i++)
 	{
 		for (int j = 0; j < BLOCK_SIZE; j++)
 		{
-			if (tmpMass[i][j] == 0 && flag == 0)
-				continue;
-			else
-			{
-				res->val[i] = res->val[i] * 10 + tmpMass[i][j];
-				flag = 1;
-			}
+			result.val[i][j] = tmpMass[i][j];
 		}
 	}
-	realloc_result();
-	word_alignment(res);
 	if (sign)
-		res->sign = true;
+		result.sign = true;
+
 }
 
-void multiply(bool sign, supportMASS *n1, supportMASS *n2)
+void MULTIPLY(bool sign, bigInt *n1, bigInt *n2)
 {
-	unsigned
-		* firstStepNumber = (unsigned*)malloc((n2->length + 1) * sizeof(unsigned)),
-		* divideFS = (unsigned*)malloc(BLOCK_SIZE * sizeof(unsigned)),
-		** secondStepMass = (unsigned**)malloc(n1->length * sizeof(unsigned*));
-	for (int i = 0; i < n1->length; i++)
-		secondStepMass[i] = (unsigned*)malloc((n2->length + 1) * sizeof(unsigned));
+	char TABLE[16][16][2] = {
+		{ {"00"}, {"00"}, {"00"}, {"00"}, {"00"}, {"00"}, {"00"}, {"00"}, {"00"}, {"00"}, {"00"}, {"00"}, {"00"}, {"00"}, {"00"}, {"00"} },
+		{ {"00"}, {"01"}, {"02"}, {"03"}, {"04"}, {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"} },
+		{ {"00"}, {"02"}, {"04"}, {"06"}, {"08"}, {"0A"}, {"0C"}, {"0E"}, {"10"}, {"12"}, {"14"}, {"16"}, {"18"}, {"1A"}, {"1C"}, {"1E"} },
+		{ {"00"}, {"03"}, {"06"}, {"09"}, {"0C"}, {"0F"}, {"12"}, {"15"}, {"18"}, {"1B"}, {"1E"}, {"21"}, {"24"}, {"27"}, {"2A"}, {"2D"} },
+		{ {"00"}, {"04"}, {"08"}, {"0C"}, {"10"}, {"14"}, {"18"}, {"1C"}, {"20"}, {"24"}, {"28"}, {"2C"}, {"30"}, {"34"}, {"38"}, {"3C"} },
+		{ {"00"}, {"05"}, {"0A"}, {"0F"}, {"14"}, {"19"}, {"1E"}, {"23"}, {"28"}, {"2D"}, {"32"}, {"37"}, {"3C"}, {"41"}, {"46"}, {"4B"} },
+		{ {"00"}, {"06"}, {"0C"}, {"12"}, {"18"}, {"1E"}, {"24"}, {"2A"}, {"30"}, {"36"}, {"3C"}, {"42"}, {"48"}, {"4E"}, {"54"}, {"5A"} },
+		{ {"00"}, {"07"}, {"0E"}, {"15"}, {"1C"}, {"23"}, {"2A"}, {"31"}, {"38"}, {"3F"}, {"46"}, {"4D"}, {"54"}, {"5B"}, {"62"}, {"69"} },
+		{ {"00"}, {"08"}, {"10"}, {"18"}, {"20"}, {"28"}, {"30"}, {"38"}, {"40"}, {"48"}, {"50"}, {"58"}, {"60"}, {"68"}, {"70"}, {"78"} },
+		{ {"00"}, {"09"}, {"12"}, {"1B"}, {"24"}, {"2D"}, {"36"}, {"3F"}, {"48"}, {"51"}, {"5A"}, {"63"}, {"6C"}, {"75"}, {"7E"}, {"87"} },
+		{ {"00"}, {"0A"}, {"14"}, {"1E"}, {"28"}, {"32"}, {"3C"}, {"46"}, {"50"}, {"5A"}, {"64"}, {"6E"}, {"78"}, {"82"}, {"8C"}, {"96"} },
+		{ {"00"}, {"0B"}, {"16"}, {"21"}, {"2C"}, {"37"}, {"42"}, {"4D"}, {"58"}, {"63"}, {"6E"}, {"79"}, {"84"}, {"8F"}, {"9A"}, {"A5"} },
+		{ {"00"}, {"0C"}, {"18"}, {"24"}, {"30"}, {"3C"}, {"48"}, {"54"}, {"60"}, {"6C"}, {"78"}, {"84"}, {"90"}, {"9C"}, {"A8"}, {"B4"} },
+		{ {"00"}, {"0D"}, {"1A"}, {"27"}, {"34"}, {"41"}, {"4E"}, {"5B"}, {"68"}, {"75"}, {"82"}, {"8F"}, {"9C"}, {"A9"}, {"B6"}, {"C3"} },
+		{ {"00"}, {"0E"}, {"1C"}, {"2A"}, {"38"}, {"46"}, {"54"}, {"62"}, {"70"}, {"7E"}, {"8C"}, {"9A"}, {"A8"}, {"B6"}, {"C4"}, {"D2"} },
+		{ {"00"}, {"0F"}, {"1E"}, {"2D"}, {"3C"}, {"4B"}, {"5A"}, {"69"}, {"78"}, {"87"}, {"96"}, {"A5"}, {"B4"}, {"C3"}, {"D2"}, {"E1"} }
+	};
 
-	int oldLen = 0;
-	res->val = (unsigned*)realloc(res->val, (n1->length + n2->length) * sizeof(unsigned));
-	res->zero = (unsigned*)realloc(res->zero, (n1->length + n2->length) * sizeof(unsigned));
-	for (int i = 0; i < n1->length + n2->length; i++)
+	int** IntermediateMass = (int**)malloc((n1->length * BLOCK_SIZE) * sizeof(int*));
+	for (int i = 0; i < n1->length*BLOCK_SIZE; i++)
+		IntermediateMass[i] = (int*)malloc((n1->length*BLOCK_SIZE+1) * sizeof(int));
+	for (int i = 0; i < n1->length * BLOCK_SIZE; i++)
 	{
-		res->val[i] = 0;
-		res->zero[i] = 0;
+		for (int j = 0; j < n1->length * BLOCK_SIZE+1; j++)
+			IntermediateMass[i][j] = '0';
 	}
-	res->length = n1->length + n2->length;
-	unsigned divide = 0;
-	int x, y;
+	int* res_mass = (int*)malloc((n1->length * BLOCK_SIZE * 2) * sizeof(int));
+	for (int i = 0; i < n1->length * BLOCK_SIZE * 2; i++)
+		res_mass[i] = '0';
+
+	int div = 0, div_flag = 0, flag = 0,
+		n1_it = n1->length - 1, n2_it = n2->length - 1,
+		IM_it_char, IM_it_word,
+		x, y, X, Y;
+	int temp[2] = {0};
+
 	//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	for (int i = n1->length - 1; i >= 0; i--)
-	{
-		x = n1->val[i];
-		for (int j = n2->length; j > 0; j--)
-		{
-			y = n2->val[j - 1];
-			firstStepNumber[j] = x * y;
-
-			//===========раздел€ем на блоки по BLOCK_SIZE================================================================
-			if (firstStepNumber[j] > 9999)                    //≈сли число больше блока, то берем последние BLOCK_SIZE цифры, остальное в остаток 
-			{
-				divideFS[j] = firstStepNumber[j] / 10000;
-				firstStepNumber[j] %= 10000;
-			}
-			else
-				divideFS[j] = 0;
-			//printf("\nDIVIDE = %u, NUMB = %u\n", divideFS[j], firstStepNumber[j]);
-			//================≈сли не нулева€ итераци€, прибавл€ем остаток из предыдущего перемножени€===================
-			if (j != num2->length)
-				firstStepNumber[j] = firstStepNumber[j] + divideFS[j + 1];
-			if (firstStepNumber[j] > 9999)          //≈сли оно больше блка, то переносим 1 в остаток, и берем посследние 4 цифры
-			{
-				divideFS[j]++;
-				firstStepNumber[j] %= 10000;
-			}
-		}
-
-		//===================цикл записи полученного числа в массив второго этапа========================================
-		for (int j = 0; j < n2->length + 1; j++)
-		{
-			if (j == 0)
-				secondStepMass[i][j] = divideFS[j + 1];
-			else
-				secondStepMass[i][j] = firstStepNumber[j];
-			//printf("\nSEC MASS[%d][%d] = %u\n", i, j, secondStepMass[i][j]);
-		}
-	}
-	for (int i = 0; i < n1->length; i++)
-		secondStepMass[i] = (unsigned*)realloc(secondStepMass[i], (n1->length + n2->length) * sizeof(unsigned));
 	
-	alignment_mult_val(&secondStepMass[0], n1->length, n1->length + n2->length);
-
-	divide = 0;
-	for (int i = n1->length + n2->length - 1; i >= 0; i--)
+	
+	IM_it_word = n1->length * BLOCK_SIZE;
+	for (int k = n2->length - 1; k >= 0; k--)
 	{
-		for (int j = 0; j < n1->length; j++)
+		for (int f = BLOCK_SIZE - 1; f >= 0; f--)
 		{
-			res->val[i] += secondStepMass[j][i];
+			IM_it_char = n1->length * BLOCK_SIZE;
+			Y = n2->val[k][f];
+			if (Y == 'N')
+				Y = '0';
+			IM_it_word--;
+
+			for (int i = n1->length - 1; i >= 0; i--)
+			{
+				for (int j = BLOCK_SIZE - 1; j >= 0; j--)
+				{
+					IM_it_char--;
+					X = n1->val[i][j];
+					if (X != 'N')
+					{
+						x = char_to_int(X);
+						if (Y == 'N')
+							Y = '1';
+						y = char_to_int(Y);
+
+
+						if (div != 0)
+						{
+							plus_div(TABLE[x][y], div, &temp);
+							IntermediateMass[IM_it_word][IM_it_char] = temp[1];
+							div = temp[0];
+							//printf("%c", IntermediateMass[IM_it_word][IM_it_char]);
+							continue;
+						}
+						else
+						{
+							IntermediateMass[IM_it_word][IM_it_char] = TABLE[x][y][1];
+							//printf("%c", IntermediateMass[IM_it_word][IM_it_char]);
+						}
+
+						if (TABLE[x][y][0] != '0')
+							div = char_to_int(TABLE[x][y][0]);
+						else
+							div = 0;
+					}
+					else
+					{
+						IntermediateMass[IM_it_word][IM_it_char] = int_to_char(div);
+						div = 0;
+						//printf("\nSMASS [%d][%d] = %c", f, IM_it_char, IntermediateMass[f][IM_it_char]);
+						break;
+					}
+				}
+			}
 		}
-		res->val[i] += divide;
-		if (res->val[i] > 9999)
-		{
-			divide = res->val[i] / 10000;
-			res->val[i] %= 10000;
-		}
-		else
-			divide = 0;
+	}
+	/*for (int i = 0; i < n1->length * BLOCK_SIZE; i++)
+	{
+		printf("\n [%d] mass = ", i);
+		for (int j = 0; j < n1->length * BLOCK_SIZE; j++)
+			printf("%c", IntermediateMass[i][j]);
+	}*/
+
+
+	for (int i = 0; i < n1->length * BLOCK_SIZE; i++)
+	{
+		IntermediateMass[i] = (int*)realloc(IntermediateMass[i], ((n1->length * BLOCK_SIZE) * 2) * sizeof(int));
 	}
 
-	for (int t = 0; t < n1->length + n2->length; t++)
-		printf("\nRESULT VAL [%d] = %u", t, res->val[t]);
-	word_alignment(res);
+	/*for (int i = 0; i < n1->length * BLOCK_SIZE; i++)
+	{
+		printf("\n [%d] mass = ", i);
+		for (int j = 0; j < n1->length * BLOCK_SIZE * 2; j++)
+			printf("%c", IntermediateMass[i][j]);
+	}*/
+	alignment_mult_val(&IntermediateMass[0], n1, n2);
+
+	//‘ункци€ сложени€ промежуточных блоков большого числа
+	for (int i = 0; i < n1->length*BLOCK_SIZE; i++)
+	{
+		plus_interm_val(&res_mass[0], &IntermediateMass[0], i, n1->length*BLOCK_SIZE*2);
+
+		/*printf("\nInter res [%d]: ", i);
+		for (int i = 0; i < n1->length * BLOCK_SIZE * 2; i++)
+		{
+			printf("%c", res_mass[i]);
+		}*/
+	}
+	
+	/*printf("\nResult mass: ");
+	for (int i = 0; i < n1->length * BLOCK_SIZE*2; i++)
+	{
+		printf("%c", res_mass[i]);
+	}*/
+
+	x = n1->length * BLOCK_SIZE * 2 - 1; X = 0;
+	for (int i = result.length-1; i>=0; i--)
+	{
+		for (int j = BLOCK_SIZE -1; j>=0; j--)
+		{
+			result.val[i][j] = res_mass[x];
+			x--;
+		}
+	}
+	for (int i = 0; i < result.length; i++)
+	{
+		for (int j = 0; j < BLOCK_SIZE; j++)
+		{
+			if (result.val[i][j] == '0' && X == 0)
+				result.val[i][j] = 'N';
+			else
+			{
+				X = 1;
+				break;
+			}
+		}
+	}
+
+	//free(res_mass);
 	if (sign)
-		res->sign = true;
+		result.sign = true;
 }
 
-void divide(bool sign, supportMASS *n1, supportMASS *n2)
+void DIVIDE(bool sign, bigInt* n1, bigInt* n2)
 {
-	unsigned lenDen = 0;
-	lenDen = getLengthDenomination(n2);
-	
-	unsigned frst, scnd;
-	if (compare(n1, lenDen, n2)) // true - (tmp > denom) else - false
-	{
-		lenDen++;
-	}
-
-	
+	printf("\nOops, sorry, this option has not been implemented yet!");
+	system("pause");
+	exit(10);
 }
 
-int get_nineCount(unsigned X, int j)
+int get_zero_count(bigInt *num, int i, int j)
 {
-	int n = -1;
-	X /= 10;
-	if (X == 0)
-		return 3 -j;
-	while (1)
+	int n = -1, flag = 0, _j = j-1;
+	for (i; i >= 0; i--)
 	{
-		if (X % 10 == 0)
+		if (flag != 0)
+			_j = BLOCK_SIZE -1;
+		for (_j; _j >= 0; _j--)
 		{
-			n++;
-			X = X / 10;
+			if (num->val[i][_j] == '0')
+				n++;
+			else
+				return n;
 		}
-		else
-			break;
+		flag = 1;
 	}
-	return n;
 }
 
 void operation_definition(char op)
@@ -588,16 +660,26 @@ void operation_definition(char op)
 	else if (num1->length < num2->length)
 		size2 = 1;
 	else {
-		for (int i = 0; i < result.length - 1; i++) 
+		for (int j = 0; j < BLOCK_SIZE; j++)
 		{
-			if (num1->val[i] > num2->val[i] || i == result.length - 2)
+			size1 = num1->val[0][j];
+			size2 = num2->val[0][j];
+			if (size1 == 'N')
+				size1 = 0;
+			if (size2 == 'N')
+				size2 = 0;
+			if (size1 > size2 || j == BLOCK_SIZE - 1)
 			{
 				size1 = 1;
+				size2 = 0;
 				break;
 			}
+			else if (size1 == size2)
+				continue;
 			else
 			{
 				size2 = 1;
+				size1 = 0;
 				break;
 			}
 		}
@@ -618,48 +700,52 @@ void operation_definition(char op)
 	if (op == '-')
 	{
 		if (num1->sign == true && num2->sign == false)
-			add(true);
+			ADD(true, num1, num2);
 		else if (size1 > size2 && num1->sign == false)
-			subtract(false, num1, num2);
+			SUBTRACT(false, num1, num2);
 		else if (num1->sign == false && size1 < size2)
 		{
 			swapBigNum(num1, num2);
-			subtract(true, num1, num2);
+			SUBTRACT(true, num1, num2);
 		}
 	}
-	 else if (op == '+')
+	else if (op == '+')
 	{
 		if (num1->sign == false && num2->sign == false)
-			add(false);
+		{
+			if (size1 < size2)
+				swapBigNum(num1, num2);
+			ADD(false, num1, num2);
+		}
 		else if (num1->sign == true && size1 > size2)
-			subtract(true);
+			SUBTRACT(true, num1, num2);
 		else if (num1->sign == true && size1 < size2)
 		{
-			swapBigNum();
-			subtract(false);
+			swapBigNum(num1, num2);
+			SUBTRACT(false, num1, num2);
 		}
 	}
 	else if (op == '*')
 	{
 		if (size1 < size2)
-			swapBigNum();
+			swapBigNum(num1, num2);
 		if (num1->sign == true && num2->sign == true)
-			multiply(false);
+			MULTIPLY(false, num1, num2);
 		else if (num1->sign == true || num2->sign == true)
-			multiply(true);
+			MULTIPLY(true, num1, num2);
 		else if (num1->sign == false && num2->sign == false)
-			multiply(false);
+			MULTIPLY(false, num1, num2);
 	}
 	else if (op == '/')
 	{
 		if (size1 < size2)
 			swapBigNum(num1, num2);
 		if (num1->sign == true && num2->sign == true)
-			divide(false, num1, num2);
+			DIVIDE(false, num1, num2);
 		else if (num1->sign == true || num2->sign == true)
-			divide(true, num1, num2);
+			DIVIDE(true, num1, num2);
 		else if (num1->sign == false && num2->sign == false)
-			divide(false, num1, num2);
+			DIVIDE(false, num1, num2);
 	}
 	else
 	{
@@ -669,99 +755,48 @@ void operation_definition(char op)
 	}
 }
  
-void swapBigNum(supportMASS* n1, supportMASS *n2)
+void swapBigNum(bigInt* n1, bigInt *n2)
 {
-	supportMASS *tmp;
-	tmp = n1;
-	n1 = n2;
-	n2 = tmp;
+	bigInt tmp;
+	tmp = *n1;
+	*n1 = *n2;
+	*n2 = tmp;
 }
 
-void word_alignment(supportMASS *num)
+void alignment_mult_val(unsigned** mass, bigInt* n1, bigInt* n2)
 {
-	int flag = 0, tmp = 0;
-	for (int i = 0; i < num->length; i++)
-	{
-		tmp = num->val[i];
-		while (tmp < pow(10, BLOCK_SIZE-1))
-		{
-			if (tmp == 0 && flag == 0)
-				break;
-			num->zero[i]++;
-			if (tmp == 0)
-			{
-				tmp = 1;
-				continue;
-			}
-			tmp *= 10;
-			flag = 1;
-		}
-		flag = 1;
-	}
-}
-
-void realloc_result()
-{
-	unsigned n = 0, tmp, indx;
-	for (int i = 0; i < res->length; i++)
-	{
-		if (res->val[i] != 0)
-		{
-			indx = i;
-			n = i;
-			break;
-		}
-	}
-	res->length = res->length - indx;
-	while (n > 0)
-	{
-		for (int i = 0; i < res->length; i++)
-		{
-			res->val[indx-1] = res->val[indx];
-			indx++;
-		}
-		indx = indx - res->length;
-		n--;
-	}
-	res->val = (unsigned*)realloc(res->val, res->length * sizeof(unsigned));
-	res->zero = (int*)realloc(res->zero, res->length * sizeof(int));
-}
-
-void alignment_mult_val(unsigned** mass, int n,  int len)
-{
-	int minus = n - 1, it;
+	int minus = 1, it, n = n1->length, len =0;
 	unsigned tmp = 0;
 
-	//забиваем нул€ми новые €чейки
-	for (int i = 0; i < n; i++)
+
+	int ch_len = 0;
+	for (int i = 0; i < n1->length*BLOCK_SIZE; i++)
 	{
-		for (int j = num2->length+1; j < len; j++)
+		for (int j = (n1->length * BLOCK_SIZE) * 2; j>=0; j--)
 		{
-			mass[i][j] = 0;
+			if (clean_cell(mass[i][j]))
+			{
+				mass[i][j] = '0';
+			}
+			else
+				ch_len = j;
 		}
 	}
 
-	printf("\nBEFORE SWAP:");
-	for (int i = 0; i < n; i++)
+	
+
+	/*printf("\nBEFORE SWAP:");
+	for (int i = 0; i < n1->length * BLOCK_SIZE; i++)
 	{
-		printf("\nMASS[%d] => ", i);
-		for (int j = 0; j < len; j++)
-		{
-			printf("|%u", mass[i][j]);
-			tmp = mass[i][j];
-			if (tmp > 99 && tmp <= 999)
-				printf(" ");
-			else if (tmp > 9 && tmp <= 99)
-				printf("  ");
-			else if (tmp >= 0 && tmp <= 9)
-				printf("   ");
-		}
-	}
+		printf("\n [%d] mass = ", i);
+		for (int j = 0; j < n1->length * BLOCK_SIZE * 2; j++)
+			printf("%c", mass[i][j]);
+	}*/
 	//================свапаем числа в массиве дл€ дальнейшего корректного сложени€================= 
-	for (int i = 0; i < num2->length + 1; i++)
+	for (int i = 0; i < n1->length*BLOCK_SIZE*2; i++)
 	{
-		it = n - 1;
-		for (int j = 0; j < ( (n - 1)/2 +1); j++)
+		it = n1->length*BLOCK_SIZE -1;
+		for (int j = 0; j < n1->length*BLOCK_SIZE/2; j++)
 		{
 			tmp = mass[j][i];
 			mass[j][i] = mass[it][i];
@@ -769,71 +804,60 @@ void alignment_mult_val(unsigned** mass, int n,  int len)
 			it--;
 		}
 	}
-	printf("\nAFTER SWAP:");
-	for (int i = 0; i < n; i++)
+	/*printf("\nAFTER SWAP:");
+	for (int i = 0; i < n1->length * BLOCK_SIZE; i++)
 	{
-		printf("\nMASS[%d] => ", i);
-		for (int j = 0; j < len; j++)
-		{
-			printf("|%u", mass[i][j]);
-			tmp = mass[i][j];
-			if (tmp > 99 && tmp <= 999)
-				printf(" ");
-			else if (tmp > 9 && tmp <= 99)
-				printf("  ");
-			else if (tmp >= 0 && tmp <= 9)
-				printf("   ");
-		}
-	}
+		printf("\n [%d] mass = ", i);
+		for (int j = 0; j < n1->length * BLOCK_SIZE * 2; j++)
+			printf("%c", mass[i][j]);
+	}*/
 
-
+	minus = n1->length * BLOCK_SIZE * 2 - 1;
 	//сдвигаем числа в строке дл€ корректного сложени€ по столбикам
-	for (int i = 0; i < n; i++)
+	for (int i = 0; i < n1->length * BLOCK_SIZE; i++)
 	{
-		if (minus == 0)
-			break;
-		for (int j = len-1; j >= minus; j--)
+		minus = n1->length * BLOCK_SIZE * 2 - 1;
+		for (int j = n1->length * BLOCK_SIZE - 1; j >= 0; j--)
 		{
-			mass[i][j] = mass[i][j - minus];
-			mass[i][j - minus] = 0;
+			mass[i][minus - i] = mass[i][j];
+			mass[i][j] = '0';
+			minus--;
 		}
-		minus--;
 	}
 
-	printf("\nALIGMENT MASS:");
-	for (int i = 0; i < n; i++)
+	/*printf("\nALIGMENT MASS:");
+	for (int i = 0; i < n1->length * BLOCK_SIZE; i++)
 	{
-		printf("\nMASS[%d] => ", i);
-		for (int j = 0; j < len; j++)
-		{
-			printf("|%u", mass[i][j]);
-			tmp = mass[i][j];
-			if (tmp > 99 && tmp <= 999)
-				printf(" ");
-			else if (tmp > 9 && tmp <= 99)
-				printf("  ");
-			else if (tmp >= 0 && tmp <= 9)
-				printf("   ");
-		}
-	}
+		printf("\n [%d] mass = ", i);
+		for (int j = 0; j < n1->length * BLOCK_SIZE * 2; j++)
+			printf("%c", mass[i][j]);
+	}*/
 
 }
 
-bool get_numbers_from_console(char** numbers, int argc, char** argv)
+void get_numbers_from_console(char** numbers, int argc, char** argv)
 {
 	int len1 = 150, len2 = 150, it = 0;
 	numbers[0] = (char*)realloc(numbers[0], len1 * sizeof(char));
 	numbers[2] = (char*)realloc(numbers[2], len1 * sizeof(char));
 
 	char ch;
-	if (argc > 1)
+	if (argc > 1 )
 	{
+		if (argc != 4 )
+		{
+			printf("\nError! Invalid argument!\n");
+			system("pause");
+			exit(12);
+		}
 		while (1)
 		{
 			ch = argv[1][it];
 			if (ch == '\0')
 			{
 				numbers[0][it] = ch;
+				len1 = it+1;
+				numbers[0] = (char*)realloc(numbers[0], len1 * sizeof(char));
 				break;
 			}
 			if (it == len1 - 1)
@@ -852,12 +876,14 @@ bool get_numbers_from_console(char** numbers, int argc, char** argv)
 			if (ch == '\0')
 			{
 				numbers[2][it] = ch;
+				len2 = it + 1;
+				numbers[2] = (char*)realloc(numbers[2], len2 * sizeof(char));
 				break;
 			}
 			if (it == len1 - 1)
 			{
-				len1 += 50;
-				numbers[2] = (char*)realloc(numbers[0], len1 * sizeof(char));
+				len2 += 50;
+				numbers[2] = (char*)realloc(numbers[2], len2 * sizeof(char));
 			}
 			numbers[2][it] = argv[3][it];
 			it++;
@@ -928,7 +954,7 @@ void trandlate_to_dec(char** numbers)
 	}
 }
 
-unsigned getLengthDenomination(supportMASS* n)
+unsigned getLengthDenomination(bigInt* n)
 {
 	unsigned tmp = 0, len = 1;
 	if (n->val[0] != 0)
@@ -945,7 +971,126 @@ unsigned getLengthDenomination(supportMASS* n)
 	return len;
 }
 
-bool compare(supportMASS* n1, unsigned len, supportMASS* n2)
+bool compare(bigInt* n1, unsigned len, bigInt* n2)
 {
 
+}
+
+int plus_div(char num[2], int div, int *tmp)
+{
+	char TABLE[16][16][2] = {
+		{ {"00"}, {"01"}, {"02"}, {"03"}, {"04"}, {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"} },
+		{ {"01"}, {"02"}, {"03"}, {"04"}, {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"} },
+		{ {"02"}, {"03"}, {"04"}, {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"} },
+		{ {"03"}, {"04"}, {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"} },
+		{ {"04"}, {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"} },
+		{ {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"} },
+		{ {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"} },
+		{ {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"} },
+		{ {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"} },
+		{ {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"} },
+		{ {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"} },
+		{ {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"}, {"1A"} },
+		{ {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"}, {"1A"}, {"1B"} },
+		{ {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"}, {"1A"}, {"1B"}, {"1C"} },
+		{ {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"}, {"1A"}, {"1B"}, {"1C"}, {"1D"} },
+		{ {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"}, {"1A"}, {"1B"}, {"1C"}, {"1D"}, {"1E"} }
+	};
+	int x, y;
+
+	if (num[1] > '9')
+		x = num[1] - '0' - 7;
+	else
+		x = num[1] - '0';
+
+	y = div;
+	//if (TABLE[x][y][1] > '9')
+	//	res[1] = TABLE[x][y][1] - '0' - 7;
+	//else
+	//	res[1] = TABLE[x][y][1] - '0';
+
+	tmp[1] = TABLE[x][y][1]; 
+
+
+	if (TABLE[x][y][0] != '0')
+		tmp[0] = 1;
+	else
+		tmp[0] = 0; 
+
+	if (num[0] > '9')            
+		tmp[0] += (num[0] - '0' - 7);
+	else
+		tmp[0] += (num[0] - '0');
+}
+
+bool clean_cell(int cell)
+{
+	char ALPH[] = { "0123456789ABCDEF" };
+	for(int i=0; i<17; i++)
+		if (cell == ALPH[i])
+			return false;
+	return true;
+}
+
+void plus_interm_val(int *res, int** tmp, int it,  int len)
+{
+	char TABLE[16][16][2] = {
+		{ {"00"}, {"01"}, {"02"}, {"03"}, {"04"}, {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"} },
+		{ {"01"}, {"02"}, {"03"}, {"04"}, {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"} },
+		{ {"02"}, {"03"}, {"04"}, {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"} },
+		{ {"03"}, {"04"}, {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"} },
+		{ {"04"}, {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"} },
+		{ {"05"}, {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"} },
+		{ {"06"}, {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"} },
+		{ {"07"}, {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"} },
+		{ {"08"}, {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"} },
+		{ {"09"}, {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"} },
+		{ {"0A"}, {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"} },
+		{ {"0B"}, {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"}, {"1A"} },
+		{ {"0C"}, {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"}, {"1A"}, {"1B"} },
+		{ {"0D"}, {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"}, {"1A"}, {"1B"}, {"1C"} },
+		{ {"0E"}, {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"}, {"1A"}, {"1B"}, {"1C"}, {"1D"} },
+		{ {"0F"}, {"10"}, {"11"}, {"12"}, {"13"}, {"14"}, {"15"}, {"16"}, {"17"}, {"18"}, {"19"}, {"1A"}, {"1B"}, {"1C"}, {"1D"}, {"1E"} }
+	};
+
+	int i,x, y, div =0;
+
+	for (i = len-1; i>=0; i--)
+	{
+		x = char_to_int(res[i]);
+		y = char_to_int(tmp[it][i]);
+		if (x != 15)
+			x = x + div;
+		else
+			y = y + div;
+		res[i] = TABLE[x][y][1];
+		if (TABLE[x][y][0] != '0')
+			div = char_to_int(TABLE[x][y][0]);
+		else
+			div = 0;
+	}
+	if (div != 0)
+	{
+		res[i] = int_to_char(div);
+	}
+}
+
+int char_to_int(char ch)
+{
+	if (ch >= 'A' && ch <= 'Z')
+		return ch - '0' - 7;
+	else if (ch <= '9' && ch >= '0')
+		return ch - '0';
+	else
+		return '#';
+}
+
+char int_to_char(int n)
+{
+	if (n >= 10 && n <= 15)
+		return n + '0' + 7;
+	else if (n <= 9 && n >= 0)
+		return n + '0';
+	else
+		return -1;
 }

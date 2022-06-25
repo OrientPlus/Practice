@@ -8,37 +8,32 @@ typedef struct {
 	bool sign;
 }bigInt;
 
-typedef struct {
-	unsigned* val;
-	int length;
-	bool sign;
-	int* zero;
-}supportMASS;
+bigInt result, a, b;
 
-bigInt result;
-
-supportMASS a, b, c;
 
 
 int bigNum(int argc, char** argv);
 void getNumbers(int argc, char** argv);
-void printBigNum_dec(supportMASS *num);
-void printBigNum_hex(bigInt* num);
+void printBigNum(bigInt *num);
 void initNumbers(char** argv);
 void check_numbers(int argc, char** argv);
 
-void divide(bool sign, supportMASS *n1, supportMASS *n2);
-void multiply(bool sign, supportMASS *n1, supportMASS *n2);
-void add(bool sign);
-void subtract(bool sign, supportMASS* n1, supportMASS* n2);
+void MULTIPLY(bool sign, bigInt *n1, bigInt *n2);
+void ADD(bool sign, bigInt *n1, bigInt *n2);
+void SUBTRACT(bool sign, bigInt* n1, bigInt* n2);
+void DIVIDE(bool sign, bigInt* n1, bigInt* n2);
 
 void operation_definition(char op);
-void swapBigNum(supportMASS *n1, supportMASS *n2);
-void word_alignment(supportMASS* num);
-void realloc_result();
-void alignment_mult_val(unsigned** mass, int n, int len);
-int get_nineCount(unsigned X, int j);
+void swapBigNum(bigInt *n1, bigInt *n2);
 
-bool get_numbers_from_console(char** numbers, int argc, char** argv);
-unsigned getLengthDenomination(supportMASS* n);
-bool compare(supportMASS* n1, unsigned len, supportMASS* n2);
+void alignment_mult_val(unsigned** mass, bigInt* n1, bigInt* n2);
+int get_zero_count(bigInt* num, int i, int j);
+
+void get_numbers_from_console(char** numbers, int argc, char** argv);
+int plus_div(char num1[2], int div, int *tmp);
+
+
+bool clean_cell(int cell);
+void plus_interm_val(int* res, int** tmp, int it, int len);
+int char_to_int(char ch);
+char int_to_char(int n);
