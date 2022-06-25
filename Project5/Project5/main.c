@@ -3,9 +3,9 @@
 
 #include "bigNum.h"
 
-int main()
+int main(int argc, char** argv)
 {
-	bigNum();
+	bigNum(argc, &argv[0]);
 	
 	
 	printf("\n\n");

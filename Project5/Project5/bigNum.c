@@ -27,11 +27,10 @@
 //
 
 
+supportMASS* num1 = &a, * num2 = &b, *res = &c;
 
-bigInt* num1 = &a, * num2 = &b;
 
-
-int bigNum()
+int bigNum(int argc, char** argv)
 {	
 	bool hexFlag = false;
 	char** numbers = (char**)malloc(3 * sizeof(char*));
@@ -39,8 +38,8 @@ int bigNum()
 	numbers[2] = NULL;
 	numbers[1] = (char*)malloc(2 * sizeof(char));
 
-	hexFlag = get_numbers_from_console(&numbers[0]);
-	char operation = 0;
+	get_numbers_from_console(&numbers[0], argc, &argv[0]);
+
 	check_numbers(3, &numbers[0]);
 	initNumbers(&numbers[0]);
 	getNumbers(3, &numbers[0], hexFlag);
@@ -52,26 +51,25 @@ int bigNum()
 	operation_definition(numbers[1][0]);
 
 	printf("\nResult number: ");
-	printBigNum_dec(&result);
+	printBigNum_dec(res);
 	free(num1->zero);
 	free(num2->zero);
 	free(result.val);
-	free(result.zero);
 }
 
 void check_numbers(int argc, char** argv)
 {
-	char alph[] = { "-0123456789ABCDEF" };
+	char alph[] = { "-0123456789" };
 	char opr[] = { "+-*" },
 		ch;
-	int it = 0, sFlag=0;
+	int it = 0, sFlag = 0;
 	
 	
 	while (ch = argv[0][it])
 	{
 		if (ch == '\0')
 			break;
-		for (int i = 0; i < 17; i++)
+		for (int i = 0; i < 11; i++)
 		{
 			if (ch == alph[i])
 			{
@@ -85,7 +83,7 @@ void check_numbers(int argc, char** argv)
 					sFlag = 1;
 				break;
 			}
-			else if (i == 16)
+			else if (i == 10)
 			{
 				printf("\nERROR! Invalid first number\n");
 				system("pause");
@@ -100,7 +98,7 @@ void check_numbers(int argc, char** argv)
 	{
 		if (ch == '\0')
 			break;
-		for (int i = 0; i < 17; i++)
+		for (int i = 0; i < 11; i++)
 		{
 			if (ch == alph[i])
 			{
@@ -114,7 +112,7 @@ void check_numbers(int argc, char** argv)
 					sFlag = 1;
 				break;
 			}
-			else if (i == 16)
+			else if (i == 10)
 			{
 				printf("\nERROR! Invalid second number\n");
 				system("pause");
@@ -146,7 +144,7 @@ void initNumbers(char** argv)
 	num2->zero = NULL;
 	result.sign = false;
 	
-	num1->length = strlen(argv[1]);
+	num1->length = strlen(argv[0]);
 	if (argv[0][0] == '-')
 		num1->length--;
 	num1->length /= BLOCK_SIZE;
@@ -192,26 +190,29 @@ void initNumbers(char** argv)
 
 	//------------------Initializing the result-----------------//
 	if (num1->length > num2->length)
-		result.length = num1->length + 1;
+		res->length = num1->length + 1;
 	else
 		result.length = num2->length + 1;
-	result.val = (unsigned*)malloc(result.length * sizeof(unsigned));
-	result.zero = (int*)malloc(result.length * sizeof(int));
+	res->val = (unsigned*)malloc(res->length * sizeof(unsigned));
+	res->zero = (int*)malloc(res->length * sizeof(int));
 
-	for (int i = 0; i < result.length; i++)
+	for (int i = 0; i < res->length; i++)
 	{
-		result.val[i] = 0;
-		result.zero[i] = 0;
+		res->val[i] = 0;
+		res->zero[i] = 0;
 	}
+	
+	result.length = 10;
+	result.val = (char**)malloc(result.length * sizeof(char*));
+	for (int i = 0; i < result.length; i++)
+		result.val[i] = (char*)malloc(8 * sizeof(char));
 }
 
-void getNumbers(int argc, char** argv, bool flHex)
+void getNumbers(int argc, char** argv)
 {
 	int it = 0,
 		strLen, n, flag = 0, hexF =0;
 	unsigned tmp = 0;
-	if (flHex)
-		hexF = 7;
 	
 	if (argv[0][0] == '-')
 	{
@@ -260,7 +261,7 @@ void getNumbers(int argc, char** argv, bool flHex)
 	word_alignment(num2);
 }
 
-void printBigNum_dec(bigInt *num)
+void printBigNum_dec(supportMASS *num)
 {
 	if (num->sign)
 		printf("-");
@@ -286,16 +287,16 @@ void add(bool sign)
 	int** tmpMass = NULL;
 
 
-	tmpMass = (int**)malloc(result.length * sizeof(int*));
-	for (int i = 0; i < result.length; i++)
+	tmpMass = (int**)malloc(res->length * sizeof(int*));
+	for (int i = 0; i < res->length; i++)
 		tmpMass[i] = (int*)malloc(BLOCK_SIZE * sizeof(int));
-	for (int i = 0; i < result.length; i++)
+	for (int i = 0; i < res->length; i++)
 	{
 		for (int j = 0; j < BLOCK_SIZE; j++)
 			tmpMass[i][j] = 0;
 	}
 
-	for (int i = 0; i < result.length; i++)
+	for (int i = 0; i < res->length; i++)
 	{
 		if (n1_it <= -1 && n2_it <= -1)
 			break;
@@ -311,7 +312,7 @@ void add(bool sign)
 			{
 				if (divide == 1)
 				{
-					tmpMass[(result.length - 1) - i][(BLOCK_SIZE - 1) - j] = divide;
+					tmpMass[(res->length - 1) - i][(BLOCK_SIZE - 1) - j] = divide;
 				}
 				break;
 			}
@@ -327,7 +328,7 @@ void add(bool sign)
 				}
 				else
 					divide = 0;
-				tmpMass[(result.length - 1) - i][(BLOCK_SIZE-1) - j] = x;
+				tmpMass[(res->length - 1) - i][(BLOCK_SIZE-1) - j] = x;
 				X = X / 10;
 				Y = Y / 10;
 				continue;
@@ -340,7 +341,7 @@ void add(bool sign)
 			}
 			else
 				divide = 0;
-			tmpMass[(result.length - 1) - i][(BLOCK_SIZE-1) - j] = x;
+			tmpMass[(res->length - 1) - i][(BLOCK_SIZE-1) - j] = x;
 			X = X / 10;
 			Y = Y / 10;
 		}
@@ -351,7 +352,7 @@ void add(bool sign)
 
 
 	printf("\n\n");
-	for (int i = 0; i < result.length; i++)
+	for (int i = 0; i < res->length; i++)
 	{
 		for (int j = 0; j < BLOCK_SIZE; j++)
 		{
@@ -359,41 +360,41 @@ void add(bool sign)
 				continue;
 			else
 			{
-				result.val[i] = result.val[i] * 10 + tmpMass[i][j];
+				res->val[i] = res->val[i] * 10 + tmpMass[i][j];
 				flag = 1;
 			}
 		}
 	}
 	realloc_result();
-	word_alignment(&result);
+	word_alignment(res);
 	if (sign)
-		result.sign = true;
+		res->sign = true;
 }
 
-void subtract(bool sign)
+void subtract(bool sign, supportMASS *n1, supportMASS *n2)
 {
 	int x, y, X, Y;
 	int div = 0, nine_count = -2, it_I = 0, zero_count = 0;
-	int n1_it = num1->length - 1, n2_it = num2->length - 1, flag = 0;
+	int n1_it = n1->length - 1, n2_it = n2->length - 1, flag = 0;
 	int** tmpMass = NULL;
 
-	tmpMass = (int**)malloc(result.length * sizeof(int*));
-	for (int i = 0; i < result.length; i++)
+	tmpMass = (int**)malloc(res->length * sizeof(int*));
+	for (int i = 0; i < res->length; i++)
 		tmpMass[i] = (int*)malloc(BLOCK_SIZE * sizeof(int));
-	for (int i = 0; i < result.length; i++)
+	for (int i = 0; i < res->length; i++)
 	{
 		for (int j = 0; j < BLOCK_SIZE; j++)
 			tmpMass[i][j] = 0;
 	}
 
-	for (int i = 0; i < result.length; i++)
+	for (int i = 0; i < res->length; i++)
 	{
 		if (n1_it <= -1 && n2_it <= -1)
 			break;
 		if (n1_it >= 0)
-			X = num1->val[n1_it];
+			X = n1->val[n1_it];
 		if (n2_it >= 0)
-			Y = num2->val[n2_it];
+			Y = n2->val[n2_it];
 		for (int j = 0; j < BLOCK_SIZE; j++)
 		{
 			x = X % 10;
@@ -419,7 +420,7 @@ void subtract(bool sign)
 					nine_count = get_nineCount(X, j);
 					x = 10 + x;
 					x -= y;
-					tmpMass[(result.length - 1) - i][(BLOCK_SIZE-1) - j] = x;
+					tmpMass[(res->length - 1) - i][(BLOCK_SIZE-1) - j] = x;
 					X = X / 10;
 					Y = Y / 10;
 					div = 0;
@@ -431,7 +432,7 @@ void subtract(bool sign)
 			else
 				div = 0;
 			x -= y;
-			tmpMass[(result.length - 1) - i][(BLOCK_SIZE-1) - j] = x;
+			tmpMass[(res->length - 1) - i][(BLOCK_SIZE-1) - j] = x;
 			X = X / 10;
 			Y = Y / 10;
 		}
@@ -440,7 +441,7 @@ void subtract(bool sign)
 	}
 
 	printf("\n\n");
-	for (int i = 0; i < result.length; i++) //Формируем слово большого числа из полученных значений разрядов
+	for (int i = 0; i < res->length; i++) //Формируем слово большого числа из полученных значений разрядов
 	{
 		for (int j = 0; j < BLOCK_SIZE; j++)
 		{
@@ -448,44 +449,44 @@ void subtract(bool sign)
 				continue;
 			else
 			{
-				result.val[i] = result.val[i] * 10 + tmpMass[i][j];
+				res->val[i] = res->val[i] * 10 + tmpMass[i][j];
 				flag = 1;
 			}
 		}
 	}
 	realloc_result();
-	word_alignment(&result);
+	word_alignment(res);
 	if (sign)
-		result.sign = true;
+		res->sign = true;
 }
 
-void multiply(bool sign)
+void multiply(bool sign, supportMASS *n1, supportMASS *n2)
 {
 	unsigned
-		* firstStepNumber = (unsigned*)malloc((num2->length + 1) * sizeof(unsigned)),
+		* firstStepNumber = (unsigned*)malloc((n2->length + 1) * sizeof(unsigned)),
 		* divideFS = (unsigned*)malloc(BLOCK_SIZE * sizeof(unsigned)),
-		** secondStepMass = (unsigned**)malloc(num1->length * sizeof(unsigned*));
-	for (int i = 0; i < num1->length; i++)
-		secondStepMass[i] = (unsigned*)malloc((num2->length + 1) * sizeof(unsigned));
+		** secondStepMass = (unsigned**)malloc(n1->length * sizeof(unsigned*));
+	for (int i = 0; i < n1->length; i++)
+		secondStepMass[i] = (unsigned*)malloc((n2->length + 1) * sizeof(unsigned));
 
 	int oldLen = 0;
-	result.val = (unsigned*)realloc(result.val, (num1->length + num2->length) * sizeof(unsigned));
-	result.zero = (unsigned*)realloc(result.zero, (num1->length + num2->length) * sizeof(unsigned));
-	for (int i = 0; i < num1->length + num2->length; i++)
+	res->val = (unsigned*)realloc(res->val, (n1->length + n2->length) * sizeof(unsigned));
+	res->zero = (unsigned*)realloc(res->zero, (n1->length + n2->length) * sizeof(unsigned));
+	for (int i = 0; i < n1->length + n2->length; i++)
 	{
-		result.val[i] = 0;
-		result.zero[i] = 0;
+		res->val[i] = 0;
+		res->zero[i] = 0;
 	}
-	result.length = num1->length + num2->length;
+	res->length = n1->length + n2->length;
 	unsigned divide = 0;
 	int x, y;
 	//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	for (int i = num1->length - 1; i >= 0; i--)
+	for (int i = n1->length - 1; i >= 0; i--)
 	{
-		x = num1->val[i];
-		for (int j = num2->length; j > 0; j--)
+		x = n1->val[i];
+		for (int j = n2->length; j > 0; j--)
 		{
-			y = num2->val[j - 1];
+			y = n2->val[j - 1];
 			firstStepNumber[j] = x * y;
 
 			//===========разделяем на блоки по BLOCK_SIZE================================================================
@@ -508,49 +509,56 @@ void multiply(bool sign)
 		}
 
 		//===================цикл записи полученного числа в массив второго этапа========================================
-		for (int j = 0; j < num2->length + 1; j++)
+		for (int j = 0; j < n2->length + 1; j++)
 		{
 			if (j == 0)
 				secondStepMass[i][j] = divideFS[j + 1];
 			else
 				secondStepMass[i][j] = firstStepNumber[j];
-			printf("\nSEC MASS[%d][%d] = %u\n", i, j, secondStepMass[i][j]);
+			//printf("\nSEC MASS[%d][%d] = %u\n", i, j, secondStepMass[i][j]);
 		}
 	}
-	for (int i = 0; i < num1->length; i++)
-		secondStepMass[i] = (unsigned*)realloc(secondStepMass[i], (num1->length + num2->length) * sizeof(unsigned));
+	for (int i = 0; i < n1->length; i++)
+		secondStepMass[i] = (unsigned*)realloc(secondStepMass[i], (n1->length + n2->length) * sizeof(unsigned));
 	
-
-	oldLen = num2->length + 1;
-	alignment_mult_val(&secondStepMass[0], num1->length, num1->length + num2->length, oldLen);
+	alignment_mult_val(&secondStepMass[0], n1->length, n1->length + n2->length);
 
 	divide = 0;
-	for (int i = num1->length + num2->length - 1; i >= 0; i--)
+	for (int i = n1->length + n2->length - 1; i >= 0; i--)
 	{
-		for (int j = 0; j < num1->length; j++)
+		for (int j = 0; j < n1->length; j++)
 		{
-			result.val[i] += secondStepMass[j][i];
+			res->val[i] += secondStepMass[j][i];
 		}
-		result.val[i] += divide;
-		if (result.val[i] > 9999)
+		res->val[i] += divide;
+		if (res->val[i] > 9999)
 		{
-			divide = result.val[i] / 10000;
-			result.val[i] %= 10000;
+			divide = res->val[i] / 10000;
+			res->val[i] %= 10000;
 		}
 		else
 			divide = 0;
 	}
 
-	for (int t = 0; t < num1->length + num2->length; t++)
-		printf("\nRESULT VAL [%d] = %u", t, result.val[t]);
-	word_alignment(&result);
+	for (int t = 0; t < n1->length + n2->length; t++)
+		printf("\nRESULT VAL [%d] = %u", t, res->val[t]);
+	word_alignment(res);
 	if (sign)
-		result.sign = true;
+		res->sign = true;
 }
 
-void divide(bool sign)
+void divide(bool sign, supportMASS *n1, supportMASS *n2)
 {
+	unsigned lenDen = 0;
+	lenDen = getLengthDenomination(n2);
+	
+	unsigned frst, scnd;
+	if (compare(n1, lenDen, n2)) // true - (tmp > denom) else - false
+	{
+		lenDen++;
+	}
 
+	
 }
 
 int get_nineCount(unsigned X, int j)
@@ -612,11 +620,11 @@ void operation_definition(char op)
 		if (num1->sign == true && num2->sign == false)
 			add(true);
 		else if (size1 > size2 && num1->sign == false)
-			subtract(false);
+			subtract(false, num1, num2);
 		else if (num1->sign == false && size1 < size2)
 		{
-			swapBigNum();
-			subtract(true);
+			swapBigNum(num1, num2);
+			subtract(true, num1, num2);
 		}
 	}
 	 else if (op == '+')
@@ -645,13 +653,13 @@ void operation_definition(char op)
 	else if (op == '/')
 	{
 		if (size1 < size2)
-			swapBigNum();
+			swapBigNum(num1, num2);
 		if (num1->sign == true && num2->sign == true)
-			divide(false);
+			divide(false, num1, num2);
 		else if (num1->sign == true || num2->sign == true)
-			divide(true);
+			divide(true, num1, num2);
 		else if (num1->sign == false && num2->sign == false)
-			divide(false);
+			divide(false, num1, num2);
 	}
 	else
 	{
@@ -660,16 +668,16 @@ void operation_definition(char op)
 		exit(1);
 	}
 }
-
-void swapBigNum()
+ 
+void swapBigNum(supportMASS* n1, supportMASS *n2)
 {
-	bigInt *tmp;
-	tmp = num1;
-	num1 = num2;
-	num2 = tmp;
+	supportMASS *tmp;
+	tmp = n1;
+	n1 = n2;
+	n2 = tmp;
 }
 
-void word_alignment(bigInt *num)
+void word_alignment(supportMASS *num)
 {
 	int flag = 0, tmp = 0;
 	for (int i = 0; i < num->length; i++)
@@ -695,36 +703,36 @@ void word_alignment(bigInt *num)
 void realloc_result()
 {
 	unsigned n = 0, tmp, indx;
-	for (int i = 0; i < result.length; i++)
+	for (int i = 0; i < res->length; i++)
 	{
-		if (result.val[i] != 0)
+		if (res->val[i] != 0)
 		{
 			indx = i;
 			n = i;
 			break;
 		}
 	}
-	result.length = result.length - indx;
+	res->length = res->length - indx;
 	while (n > 0)
 	{
-		for (int i = 0; i < result.length; i++)
+		for (int i = 0; i < res->length; i++)
 		{
-			result.val[indx-1] = result.val[indx];
+			res->val[indx-1] = res->val[indx];
 			indx++;
 		}
-		indx = indx - result.length;
+		indx = indx - res->length;
 		n--;
 	}
-	result.val = (unsigned*)realloc(result.val, result.length * sizeof(unsigned));
-	result.zero = (int*)realloc(result.zero, result.length * sizeof(int));
+	res->val = (unsigned*)realloc(res->val, res->length * sizeof(unsigned));
+	res->zero = (int*)realloc(res->zero, res->length * sizeof(int));
 }
 
-void alignment_mult_val(unsigned** mass, int n,  int len, int oldLen)
+void alignment_mult_val(unsigned** mass, int n,  int len)
 {
 	int minus = n - 1, it;
 	unsigned tmp = 0;
 
-
+	//забиваем нулями новые ячейки
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = num2->length+1; j < len; j++)
@@ -732,11 +740,28 @@ void alignment_mult_val(unsigned** mass, int n,  int len, int oldLen)
 			mass[i][j] = 0;
 		}
 	}
+
+	printf("\nBEFORE SWAP:");
+	for (int i = 0; i < n; i++)
+	{
+		printf("\nMASS[%d] => ", i);
+		for (int j = 0; j < len; j++)
+		{
+			printf("|%u", mass[i][j]);
+			tmp = mass[i][j];
+			if (tmp > 99 && tmp <= 999)
+				printf(" ");
+			else if (tmp > 9 && tmp <= 99)
+				printf("  ");
+			else if (tmp >= 0 && tmp <= 9)
+				printf("   ");
+		}
+	}
 	//================свапаем числа в массиве для дальнейшего корректного сложения================= 
-	for (int i = 0; i < num1->length; i++)
+	for (int i = 0; i < num2->length + 1; i++)
 	{
 		it = n - 1;
-		for (int j = 0; j < (n - 1); j++)
+		for (int j = 0; j < ( (n - 1)/2 +1); j++)
 		{
 			tmp = mass[j][i];
 			mass[j][i] = mass[it][i];
@@ -744,7 +769,25 @@ void alignment_mult_val(unsigned** mass, int n,  int len, int oldLen)
 			it--;
 		}
 	}
+	printf("\nAFTER SWAP:");
+	for (int i = 0; i < n; i++)
+	{
+		printf("\nMASS[%d] => ", i);
+		for (int j = 0; j < len; j++)
+		{
+			printf("|%u", mass[i][j]);
+			tmp = mass[i][j];
+			if (tmp > 99 && tmp <= 999)
+				printf(" ");
+			else if (tmp > 9 && tmp <= 99)
+				printf("  ");
+			else if (tmp >= 0 && tmp <= 9)
+				printf("   ");
+		}
+	}
 
+
+	//сдвигаем числа в строке для корректного сложения по столбикам
 	for (int i = 0; i < n; i++)
 	{
 		if (minus == 0)
@@ -757,29 +800,78 @@ void alignment_mult_val(unsigned** mass, int n,  int len, int oldLen)
 		minus--;
 	}
 
+	printf("\nALIGMENT MASS:");
+	for (int i = 0; i < n; i++)
+	{
+		printf("\nMASS[%d] => ", i);
+		for (int j = 0; j < len; j++)
+		{
+			printf("|%u", mass[i][j]);
+			tmp = mass[i][j];
+			if (tmp > 99 && tmp <= 999)
+				printf(" ");
+			else if (tmp > 9 && tmp <= 99)
+				printf("  ");
+			else if (tmp >= 0 && tmp <= 9)
+				printf("   ");
+		}
+	}
+
 }
 
-bool get_numbers_from_console(char** numbers)
+bool get_numbers_from_console(char** numbers, int argc, char** argv)
 {
 	int len1 = 150, len2 = 150, it = 0;
 	numbers[0] = (char*)realloc(numbers[0], len1 * sizeof(char));
 	numbers[2] = (char*)realloc(numbers[2], len1 * sizeof(char));
 
 	char ch;
-	char HEX[] = { "ABCDEF" };
-	bool hex = false;
-
+	if (argc > 1)
+	{
+		while (1)
+		{
+			ch = argv[1][it];
+			if (ch == '\0')
+			{
+				numbers[0][it] = ch;
+				break;
+			}
+			if (it == len1 - 1)
+			{
+				len1 += 50;
+				numbers[0] = (char*)realloc(numbers[0], len1 * sizeof(char));
+			}
+			numbers[0][it] = argv[1][it];
+			it++;
+		}
+		ch = 0;
+		it = 0;
+		while (1)
+		{
+			ch = argv[3][it];
+			if (ch == '\0')
+			{
+				numbers[2][it] = ch;
+				break;
+			}
+			if (it == len1 - 1)
+			{
+				len1 += 50;
+				numbers[2] = (char*)realloc(numbers[0], len1 * sizeof(char));
+			}
+			numbers[2][it] = argv[3][it];
+			it++;
+		}
+		numbers[1][0] = argv[2][0];
+		numbers[1][1] = '\0';
+		return false;
+	}
 	printf("\nEnter first number: ");
 	while (1)
 	{
 		ch = getc(stdin);
 		if (ch == '\n')
 			break;
-		for (int i = 0; i < 6; i++)
-		{
-			if (ch == HEX[i])
-				hex = true;
-		}
 		numbers[0][it] = ch;
 		if (it == len1 - 2)
 		{
@@ -800,11 +892,6 @@ bool get_numbers_from_console(char** numbers)
 		ch = getc(stdin);
 		if (ch == '\n')
 			break;
-		for (int i = 0; i < 6; i++)
-		{
-			if (ch == HEX[i])
-				hex = true;
-		}
 		numbers[2][it] = ch;
 		if (it == len2 - 2)
 		{
@@ -821,6 +908,44 @@ bool get_numbers_from_console(char** numbers)
 	scanf_s("%c", &ch);
 	numbers[1][0] = ch;
 	numbers[1][1] = '\0';
-	
-	return hex;
+
+}
+
+void trandlate_to_dec(char** numbers)
+{
+	int len1 = 0, len2 = 0,
+		it=0, tmp =0;
+	while (numbers[0][it] != '\0')
+	{
+		len1++;
+		it++;
+	}
+	it = 0;
+	while (numbers[2][it] != '\0')
+	{
+		len2++;
+		it++;
+	}
+}
+
+unsigned getLengthDenomination(supportMASS* n)
+{
+	unsigned tmp = 0, len = 1;
+	if (n->val[0] != 0)
+		tmp = n->val[0];
+	else
+		tmp = n->val[1];
+	while (1)
+	{
+		tmp /= 10;
+		if (tmp == 0)
+			break;
+		len++;
+	}
+	return len;
+}
+
+bool compare(supportMASS* n1, unsigned len, supportMASS* n2)
+{
+
 }
